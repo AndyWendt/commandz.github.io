@@ -47,17 +47,17 @@
 	</url>
 	
 	<url>
+		<loc>https://example.com/eleventy-base-blog/tags/number-2/</loc>
+		<lastmod>2023-12-29</lastmod>
+	</url>
+	
+	<url>
 		<loc>https://example.com/eleventy-base-blog/tags/second-tag/</loc>
 		<lastmod>2023-12-29</lastmod>
 	</url>
 	
 	<url>
 		<loc>https://example.com/eleventy-base-blog/tags/posts-with-two-tags/</loc>
-		<lastmod>2023-12-29</lastmod>
-	</url>
-	
-	<url>
-		<loc>https://example.com/eleventy-base-blog/tags/number-2/</loc>
 		<lastmod>2023-12-29</lastmod>
 	</url>
 </urlset>
