@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fizz Buzz in MySql Using a Stored Procedure and a Temporary Table - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            Fizz Buzz in MySql Using a Stored Procedure and a Temporary Table
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2016-01-01T00:00:00.000Z">01 Jan 2016</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">fizz buzz</span>
+                
+                <span class="tag">mysql</span>
+                
+                <span class="tag">interviews</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>As a fun mental exercise I whipped this up.  Is this really useful?  Probably not.  It is really a &quot;code kata&quot; if nothing else.<br>
+I wouldn't recommend using stored procedures in most situations since it is generally considered good practice<br>
+to keep your logic in your code and not in the database layer.</p>
+<h2>Rules</h2>
+<p>The standard rules for Fizz Buzz are:</p>
+<blockquote>
+<ul>
+<li>Write a program that prints the numbers from 1 to 100.</li>
+<li>But for multiples of three print “Fizz” instead of the number and for the multiples of five print “Buzz”.</li>
+<li>For numbers which are multiples of both three and five print “FizzBuzz”.</li>
+</ul>
+</blockquote>
+<p>NOTE: this program will only work for the requirements above.  If you have need for unsigned ints or some other requirement,<br>
+this solution will need to be modified.</p>
+<h2>Setup</h2>
+<p>Here we create a temporary table so that we can store the output:</p>
+<pre class="language-sql"><code class="language-sql"><span class="token keyword">drop</span> <span class="token keyword">table</span> <span class="token keyword">if</span> <span class="token keyword">exists</span> <span class="token identifier"><span class="token punctuation">`</span>results<span class="token punctuation">`</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">create</span> <span class="token keyword">temporary</span> <span class="token keyword">table</span> <span class="token identifier"><span class="token punctuation">`</span>results<span class="token punctuation">`</span></span> 
+<span class="token punctuation">(</span>
+	<span class="token identifier"><span class="token punctuation">`</span>id<span class="token punctuation">`</span></span> <span class="token keyword">int</span> <span class="token keyword">unsigned</span> <span class="token operator">not</span> <span class="token boolean">null</span> <span class="token keyword">auto_increment</span> <span class="token keyword">primary</span> <span class="token keyword">key</span><span class="token punctuation">,</span>
+    <span class="token identifier"><span class="token punctuation">`</span>value<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token operator">not</span> <span class="token boolean">null</span>
+<span class="token punctuation">)</span>
+<span class="token keyword">engine</span><span class="token operator">=</span>memory<span class="token punctuation">;</span>
+</code></pre>
+<h2>Stored Procedure</h2>
+<p>Then we create the stored procedure so that we can invoke it wherever we want.</p>
+<pre class="language-sql"><code class="language-sql">
+<span class="token comment">-- We blow away the stored procedure if it is already there</span>
+<span class="token keyword">drop</span> <span class="token keyword">procedure</span> <span class="token keyword">if</span> <span class="token keyword">exists</span> fizz_buzz<span class="token punctuation">;</span>
+
+<span class="token keyword">delimiter</span> <span class="token comment"># </span>
+
+<span class="token comment">-- we create the stored procedure</span>
+<span class="token keyword">create</span> <span class="token keyword">procedure</span> fizz_buzz<span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>start<span class="token punctuation">`</span></span> <span class="token keyword">int</span> <span class="token keyword">unsigned</span><span class="token punctuation">,</span> <span class="token identifier"><span class="token punctuation">`</span>max<span class="token punctuation">`</span></span> <span class="token keyword">int</span> <span class="token keyword">unsigned</span><span class="token punctuation">)</span>
+<span class="token keyword">begin</span>
+<span class="token keyword">declare</span> <span class="token identifier"><span class="token punctuation">`</span>counter<span class="token punctuation">`</span></span> <span class="token keyword">int</span> <span class="token keyword">unsigned</span> <span class="token keyword">default</span> <span class="token identifier"><span class="token punctuation">`</span>start<span class="token punctuation">`</span></span><span class="token punctuation">;</span>
+<span class="token keyword">declare</span> <span class="token identifier"><span class="token punctuation">`</span>value<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token boolean">null</span><span class="token punctuation">;</span>
+
+	<span class="token comment">-- don't want anything left in the table though above we are removing the table and then creating it</span>
+	<span class="token keyword">truncate</span> <span class="token keyword">table</span> <span class="token identifier"><span class="token punctuation">`</span>results<span class="token punctuation">`</span></span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token identifier"><span class="token punctuation">`</span>counter<span class="token punctuation">`</span></span> <span class="token operator">&lt;</span> <span class="token identifier"><span class="token punctuation">`</span>max<span class="token punctuation">`</span></span> <span class="token keyword">do</span>
+        <span class="token comment">-- here we do all the normal logic for fizz buzz using % (modulo)</span>
+		<span class="token keyword">IF</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>counter<span class="token punctuation">`</span></span> <span class="token operator">%</span> <span class="token number">5</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>counter<span class="token punctuation">`</span></span> <span class="token operator">%</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">THEN</span> <span class="token keyword">SET</span> <span class="token identifier"><span class="token punctuation">`</span>value<span class="token punctuation">`</span></span> <span class="token operator">=</span> <span class="token string">'FIZZ BUZZ'</span><span class="token punctuation">;</span>
+		<span class="token keyword">ELSEIF</span> <span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>counter<span class="token punctuation">`</span></span> <span class="token operator">%</span> <span class="token number">5</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token number">0</span> <span class="token keyword">THEN</span> <span class="token keyword">SET</span> <span class="token identifier"><span class="token punctuation">`</span>value<span class="token punctuation">`</span></span> <span class="token operator">=</span> <span class="token string">'BUZZ'</span><span class="token punctuation">;</span>
+		<span class="token keyword">ELSEIF</span> <span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>counter<span class="token punctuation">`</span></span> <span class="token operator">%</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token number">0</span> <span class="token keyword">THEN</span> <span class="token keyword">SET</span> <span class="token identifier"><span class="token punctuation">`</span>value<span class="token punctuation">`</span></span> <span class="token operator">=</span> <span class="token string">'FIZZ'</span><span class="token punctuation">;</span>
+        <span class="token keyword">ELSE</span>	<span class="token keyword">SET</span> <span class="token identifier"><span class="token punctuation">`</span>value<span class="token punctuation">`</span></span> <span class="token operator">=</span> <span class="token identifier"><span class="token punctuation">`</span>counter<span class="token punctuation">`</span></span><span class="token punctuation">;</span>
+        <span class="token keyword">END</span> <span class="token keyword">IF</span><span class="token punctuation">;</span> 
+        
+        <span class="token comment">-- then we insert into the results table</span>
+		<span class="token keyword">insert</span> <span class="token keyword">into</span> <span class="token identifier"><span class="token punctuation">`</span>results<span class="token punctuation">`</span></span> <span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>value<span class="token punctuation">`</span></span><span class="token punctuation">)</span> <span class="token keyword">values</span> <span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>value<span class="token punctuation">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		
+		<span class="token comment">-- then update the counter</span>
+        <span class="token keyword">set</span> <span class="token identifier"><span class="token punctuation">`</span>counter<span class="token punctuation">`</span></span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>counter<span class="token punctuation">`</span></span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">end</span> <span class="token keyword">while</span><span class="token punctuation">;</span>
+<span class="token keyword">end</span> <span class="token comment">#</span>
+
+<span class="token keyword">delimiter</span> <span class="token punctuation">;</span> 
+</code></pre>
+<h2>Usage</h2>
+<p>Now all we have to do is call the <code>fizz_buzz()</code> stored procedure and select the results from the table</p>
+<pre class="language-sql"><code class="language-sql"><span class="token keyword">call</span> fizz_buzz<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> results <span class="token keyword">order</span> <span class="token keyword">by</span> id<span class="token punctuation">;</span> 
+</code></pre>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2015 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

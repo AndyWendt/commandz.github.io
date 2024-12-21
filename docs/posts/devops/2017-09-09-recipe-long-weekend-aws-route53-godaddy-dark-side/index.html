@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Recipe for a Long Weekend - AWS Route53, GoDaddy, and the Dark Side - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            A Recipe for a Long Weekend - AWS Route53, GoDaddy, and the Dark Side
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2017-09-09T00:00:00.000Z">09 Sep 2017</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">dns</span>
+                
+                <span class="tag">aws</span>
+                
+                <span class="tag">route 53</span>
+                
+                <span class="tag">godaddy</span>
+                
+                <span class="tag">star wars</span>
+                
+                <span class="tag">tld</span>
+                
+                <span class="tag">zone file</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <blockquote>
+<p>Do not underestimate the power of the dark side -- Vader</p>
+</blockquote>
+<p>Recently, I transfered the DNS for several sites from GoDaddy over to AWS Route53 Hosted Zones. As is typical for most good devs, I over-optimistically thought that critical updates on Friday would be fine - I know what I'm doing, right?</p>
+<p>To start the process, I went to the GoDaddy DNS console for each site and selected the option to <a href="https://www.godaddy.com/help/export-my-domains-zone-file-records-4166">export a zone file</a>.</p>
+<p><img src="/images/godaddy-export-zone-file.png" alt="GoDaddy Zone File Export"></p>
+<p>I then went to the AWS console, navigated to Route53, created a new hosted zone for the domain, and then selected the option to <a href="http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-creating-import.html">import a zone file</a>.</p>
+<p><img src="/images/route53-import-zone-file.png" alt="AWS Route53 Zone File Import"></p>
+<p>Aside from a couple of tweaks and fixing a <code>txt</code> record that was too long, everything seemed to go splendidly.  I proceeded to think happy thoughts and go about enjoying my weekend. However, not all was well with the force.</p>
+<p>About 1300 on Sunday, I got a call that one of our customers couldn't receive or send email for their domain - yikes. That's a way to ruin a weekend in a hurry.  I didn't have a clue what the problem was until I talked with my boss who said that I forgot the trailing <code>.</code> on for the <code>MX</code> records - he was bitten by the same issue a few months ago.</p>
+<blockquote>
+<p>Clear your mind must be, if you are to find the villains behind this plot -- Yoda</p>
+</blockquote>
+<p>Needless to say, I was pissed and wanted to know why AWS hadn't imported the BIND zone file correctly.  It turns out that there's a documented issue (or feature, haha) with the AWS Zone File importer where it adds domains without a trailing <code>.</code> to the current domain.</p>
+<blockquote>
+<p>If you use the GoDaddy export process to create a zone file, you might need to edit the zone file to add a trailing dot to MX resource record sets before you import the zone file into your hosted zone.</p>
+<p>The export process currently doesn't add a trailing dot to the fully qualified domain names of MX resource record sets, so the Amazon Route 53 import process adds the domain name to the name of the resource record set.</p>
+<p>For example, suppose you're importing resource record sets into the hosted zone <code>example.com</code> and the name of an MX record in the zone file is <code>mail.example.com</code>, with no trailing dot. The Amazon Route 53 import process creates an MX resource record set named <code>mail.example.com.example.com.</code></p>
+</blockquote>
+<p>In other words, a few MX records turn from this:</p>
+<pre><code>; MX Records
+@	3600	IN	MX	1	ASPMX.L.GOOGLE.COM
+@	3600	IN	MX	10	ALT4.ASPMX.L.GOOGLE.COM
+@	3600	IN	MX	5	ALT2.ASPMX.L.GOOGLE.COM
+@	3600	IN	MX	10	ALT3.ASPMX.L.GOOGLE.COM
+@	3600	IN	MX	5	ALT1.ASPMX.L.GOOGLE.COM
+</code></pre>
+<br>
+<p>Into a freakish beast of a creature that only Emperor Palpatine would love:</p>
+<p><img src="/images/route53-mx-records-without-trailing-dot.png" alt="AWS Route53 MX Records Imported without the trailing dot"></p>
+<p>It doesn't stop at <code>MX</code> records, however:</p>
+<p><img src="/images/route53-cname-imported-without-trailing-dot.png" alt="AWS Route53 CNAME Record Imported without the trailing dot"></p>
+<p>Yeah, mind blown, right?</p>
+<blockquote>
+<p>I am your father. Search your feelings. You know it to be true. -- Vader</p>
+</blockquote>
+<p>It makes sense if you <a href="http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-creating-import.html">read the docs</a>, I guess, but oh my it's infuriating that you can't just import a zone file and assume that all is well with the force.</p>
+<p>Basically, AWS interprets records without the trailing <code>.</code> as belonging to the domain for the hosted zone.  If they contain the <code>.</code> then the importer interprets them as a FQDN (fully qualified domain name).</p>
+<blockquote>
+<p>When the name of a resource record set in the zone file includes a trailing dot (<code>example.com.</code>), the import process interprets the name as a fully qualified domain name and creates an Amazon Route 53 resource record set with that name.</p>
+<p>When the name of a resource record set in the zone file does not include a trailing dot (<code>www</code>), the import process concatenates that name with the domain name in the zone file (<code>example.com</code>) and creates an Amazon Route 53 resource record set with the concatenated name (<code>www.example.com</code>).</p>
+</blockquote>
+<p>I hope this saves someone from a long weekend.</p>
+<blockquote>
+<p>If you end your training now - if you choose the quick path as Vader did - you will become an agent of evil (or wreck your weekend, you will) -- Yoda</p>
+</blockquote>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2017 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

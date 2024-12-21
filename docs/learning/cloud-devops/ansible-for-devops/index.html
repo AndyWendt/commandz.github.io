@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible for DevOps - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1 class="title">Ansible for DevOps</h1>
+        
+        <div class="metadata">
+            <div class="primary-meta">
+                
+                <time datetime="2019-06-23T00:09:09.000Z">23 Jun 2019</time>
+                
+
+                
+
+                
+            </div>
+
+            
+            <div class="tags-container">
+                
+                <span class="tag">architecture</span>
+                
+                <span class="tag">deployments</span>
+                
+                <span class="tag">testing</span>
+                
+                <span class="tag">builds</span>
+                
+                <span class="tag">deploys</span>
+                
+                <span class="tag">learning</span>
+                
+            </div>
+            
+        </div>
+
+        
+        <div class="abstract">
+            The authoritative guide on Ansible
+        </div>
+        
+
+        
+        <div class="featured-image">
+            <a href="https://www.ansiblefordevops.com/" target="_blank" rel="noopener">
+                <img src="/images/books/ansible-for-devops.jpg" alt="Ansible for DevOps">
+            </a>
+        </div>
+        
+    </header>
+
+    <div class="content-body">
+        <h1>Chapter 1 - Getting Started with Ansible</h1>
+<h2>Ansible and Infrastructure Management</h2>
+<ul>
+<li>One of Ansible’s greatest strengths is its ability to run regular shell commands verbatim</li>
+<li>Idempotence: is the ability to run an operation which produces the same<br>
+result whether run once or multiple times.</li>
+</ul>
+<h2>Inventory files</h2>
+<ul>
+<li>Ansible uses an inventory file (basically, a list of servers) to communicate with your servers.
+<ul>
+<li>matches servers (IP addresses or domain names) to groups. Inventory files can do a lot more,</li>
+<li><code>/etc/ansible/hosts</code> (the default location for Ansible’s inventory file),</li>
+</ul>
+</li>
+</ul>
+<p><code>example</code> is the group of servers you’re managing and <code>www.example.com</code> is the domain name (or IP address) of a server in that group</p>
+<pre><code>[example]
+www.example.com
+# www.example.com:2222 # with port
+</code></pre>
+<p>To ping the server, run the command below.</p>
+<pre class="language-sh"><code class="language-sh">ansible example <span class="token parameter variable">-m</span> <span class="token function">ping</span> <span class="token parameter variable">-u</span>
+</code></pre>
+<p>Note: Ansible assumes you’re using passwordless (key-based) login for SSH.  If you insist on using passwords, add the <code>--ask-pass</code>, <code>-k</code>, to ansible commands.</p>
+<p>Run a command on a remote server:</p>
+<pre><code>ansible example -a &quot;free -m&quot; -u [username]
+</code></pre>
+<h2>Chapter 2 - Local Infrastructure Development: Ansible and Vagrant</h2>
+<p>A sample ansible playbook in <code>playbook.yml</code>:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">---</span> 
+<span class="token punctuation">-</span> hosts<span class="token punctuation">:</span>all
+  <span class="token key atrule">become</span><span class="token punctuation">:</span> yes
+  <span class="token key atrule">tasks</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Ensure NTP (for time synchronization) is installed.
+    <span class="token key atrule">yum</span><span class="token punctuation">:</span> name=ntp state=present
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Ensure NTP is running.
+    <span class="token key atrule">service</span><span class="token punctuation">:</span> name=ntpd state=started enabled=yes
+</code></pre>
+<p>Vagrant is invisibly using its own Ansible inventory file (instead of the one we created earlier in /etc/ansible/hosts), which just defines the Vagrant VM.</p>
+<p>To maintain idempotency and handle error conditions, you’ll have to do a lot more extra work with basic shell scripts than you do with Ansible.</p>
+<p>Using the name function and/or adding comments to the YAML is a good practice to document your tasks.</p>
+<h2>Chapter 3 - Ad-Hoc Commands</h2>
+<blockquote>
+<p>But even if you only used Ansible for server management and running individual tasks against groups of servers, and didn’t use Ansible’s playbook functionality at all, you’d still have a great orchestration and deployment tool in Ansible!</p>
+</blockquote>
+<p>An inventory file for multiple servers:</p>
+<pre><code># Application servers
+[app]
+192.168.60.4
+192.168.60.5
+
+# Database server
+[db]
+192.168.60.6
+
+# Group 'multi' with all servers
+[multi:children]
+app
+db
+
+# Variables that will be applied to all servers
+[multi:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+</code></pre>
+<p>Use ansible with the -a argument ‘hostname’ to run hostname against all the servers: <code>ansible multi -a &quot;hostname&quot;</code>.  Ansible will run the commands in parallel.</p>
+<p>If Ansible reports No hosts matched or returns some other inventory-re- lated error, try setting the <code>ANSIBLE_HOSTS</code> environment variable explicitly: <code>export ANSIBLE_HOSTS=/etc/ansible/hosts</code></p>
+<p>If you get an error like The authenticity of host '192.168.60.5' can't be established,  you can set the environment variable <code>ANSIBLE_HOST_KEY_CHECKING=False</code>.</p>
+<p>Add the argument <code>-f 1</code> to tell Ansible to use only one fork (basically, to perform the command on each server in sequence).</p>
+<p>A few other example commands:</p>
+<ul>
+<li><code>ansible multi -a &quot;df -h&quot;</code> to get free space</li>
+<li><code>ansible multi -a &quot;date&quot;</code> to get the time</li>
+<li><code>ansible multi -b -m yum -a &quot;name=ntp state=present&quot;</code> ensure ntp is present</li>
+<li><code>ansible multi -b -m service -a &quot;name=ntpd state=started enabled=yes&quot;</code> ensure ntpd is on and enabled</li>
+<li><code>ansible [host-or-group] -m setup</code> to get an exhaustive list of all the environment details</li>
+<li><code>ansible app -b -m package -a &quot;name=git state=present&quot;</code> ensure that the git package is present</li>
+<li><code>ansible multi -m stat -a &quot;path=/etc/environment&quot;</code> stat a file</li>
+<li><code>ansible multi -m copy -a &quot;src=/etc/hosts dest=/tmp/hosts&quot;</code> copy a file to servers
+<ul>
+<li>The src can be a file or a directory. If you include a trailing slash, only the contents of the directory will be copied into the dest.</li>
+</ul>
+</li>
+<li><code>ansible multi -b -m fetch -a &quot;src=/etc/hosts dest=/tmp&quot;</code> to fetch a file from a server</li>
+<li><code>ansible multi -m file -a &quot;dest=/tmp/test mode=644 state=directory&quot;</code> create a directory</li>
+<li><code>ansible multi -m file -a &quot;src=/src/symlink dest=/dest/symlink owner=root group=root state=link&quot;</code> to create a symlink</li>
+<li><code>ansible multi -m file -a &quot;dest=/tmp/test state=absent&quot;</code> delete a file or directory</li>
+</ul>
+<p>When you use Ansible’s modules instead of plain shell commands, you can use the powers of abstraction and idempotency offered by Ansible.  Even if you’re running shell commands, you could wrap them in Ansible’s shell or command modules (like <code>ansible multi -m shell -a &quot;date&quot;</code>),</p>
+<h3>Users and groups</h3>
+<p>Try to reserve the <code>--limit</code> option for running commands on single servers.  One of the most common uses for Ansible’s ad-hoc commands in my day-to-day usage is user and group management.</p>
+<ul>
+<li><code>ansible app -b -m group -a &quot;name=admin state=present&quot;</code> add a group</li>
+<li><code>ansible app -b -m user -a &quot;name=johndoe group=admin createhome=yes&quot;</code> add a user</li>
+<li><code>ansible app -b -m user -a &quot;name=johndoe state=absent remove=yes&quot;</code> to delete a user</li>
+</ul>
+<h3>Running commands in the background</h3>
+<p>Use the following options to run a job in the background:</p>
+<p>• <code>-B &lt;seconds&gt;</code>: max job runtime.<br>
+• <code>-P &lt;seconds&gt;</code>: the amount of time between polling</p>
+<h3>Logs</h3>
+<ul>
+<li>
+<p>Operations that continuously monitor a file, like tail -f, won’t work via Ansible</p>
+</li>
+<li>
+<p>It’s not a good idea to run a command that returns a huge amount of data via stdout via Ansible</p>
+</li>
+<li>
+<p><code>ansible multi -b -a &quot;tail /var/log/messages&quot;</code> view the first few lines of log files on the servers.</p>
+</li>
+</ul>
+<h4>Cron jobs</h4>
+<p>It’s best to leave things be in the crontab itself, and always manage entries via ad-hoc commands or playbooks using Ansible’s cron module.</p>
+<ul>
+<li>
+<p><code>ansible multi -b -m cron -a &quot;name='daily-cron-all-servers' hour=4 job='/path/to/daily-script.sh'&quot;</code> to enable a cron job</p>
+<ul>
+<li>Ansible will assume <code>*</code> for all values you don’t specify (valid values are <code>day</code>, <code>hour</code>, <code>minute</code>, <code>month</code>, and <code>weekday</code>). You could also specify special time values like <code>reboot</code>, <code>yearly</code>, or <code>monthly</code> using <code>special_time=[value]</code>. You can also set the user the job will run under via <code>user=[user]</code>, and create a backup of the current crontab by passing <code>backup=yes</code>. And a custom crontab location: <code>cron_file=cron_file_name</code>.</li>
+</ul>
+</li>
+<li>
+<p><code>ansible multi -b -m cron -a &quot;name='daily-cron-all-servers' state=absent&quot;</code> to remove a cronjob</p>
+</li>
+</ul>
+<h4>Deploy a version-controlled application</h4>
+<ul>
+<li><code>ansible app -b -m git -a &quot;repo=git://example.com/path/to/repo.git dest=/opt/myapp update=yes version=1.2.4&quot;</code> clone a repo</li>
+</ul>
+<p>ControlPersist allows SSH connections to persist so frequent commands run over SSH don’t have to go through the initial handshake over and over again.  Beginning in Ansible 1.3, Ansible defaulted to using native OpenSSH connections to connect to servers supporting ControlPersist.</p>
+<p>Ansible’s Accelerated mode achieves greater performance for playbooks. Instead of connecting repeatedly via SSH, Ansi- ble connects via SSH initially, then uses the AES key used in the initial connection to communicate further commands and transfers via a separate port (5099).  You can enable it for a playbook by adding the option <code>accelerate: true</code> to your playbook.</p>
+<h2>Chapter 4 - Ansible Playbooks</h2>
+<p>Playbooks (a list of instructions describing the steps to bring your server to a certain configuration state) that are then played on your servers.  It is easy to convert shell scripts (or one-off shell commands) directly into Ansible plays.</p>
+<p>A sample Ansible playbook:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">---</span>
+<span class="token punctuation">-</span> <span class="token key atrule">hosts</span><span class="token punctuation">:</span> all
+
+<span class="token key atrule">tasks</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Install Apache.
+      <span class="token key atrule">command</span><span class="token punctuation">:</span> yum install <span class="token punctuation">-</span><span class="token punctuation">-</span>quiet <span class="token punctuation">-</span>y httpd httpd<span class="token punctuation">-</span>devel
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Copy configuration files.
+      <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">></span><span class="token scalar string">
+        cp httpd.conf /etc/httpd/conf/httpd.conf</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">></span><span class="token scalar string">
+      cp httpd-vhosts.conf /etc/httpd/conf/httpd-vhosts.conf</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Start Apache and configure it to run at boot.
+      <span class="token key atrule">command</span><span class="token punctuation">:</span> service httpd start
+    <span class="token punctuation">-</span> <span class="token key atrule">command</span><span class="token punctuation">:</span> chkconfig httpd on
+</code></pre>
+<p>Run it using <code>ansible-playbook playbook.yml</code></p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">---</span> 
+<span class="token punctuation">-</span> hosts<span class="token punctuation">:</span>all
+  <span class="token key atrule">become</span><span class="token punctuation">:</span> yes
+  <span class="token key atrule">tasks</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Install Apache.
+      <span class="token key atrule">yum</span><span class="token punctuation">:</span> name=<span class="token punctuation">{</span><span class="token punctuation">{</span> item <span class="token punctuation">}</span><span class="token punctuation">}</span> state=present
+      <span class="token key atrule">with_items</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> httpd
+        <span class="token punctuation">-</span> httpd<span class="token punctuation">-</span>devel
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Copy configuration files.
+      <span class="token key atrule">copy</span><span class="token punctuation">:</span>
+        <span class="token key atrule">src</span><span class="token punctuation">:</span> <span class="token string">"{{ item.src }}"</span>
+        <span class="token key atrule">dest</span><span class="token punctuation">:</span> <span class="token string">"{{ item.dest }}"</span>
+        <span class="token key atrule">owner</span><span class="token punctuation">:</span> root
+        <span class="token key atrule">group</span><span class="token punctuation">:</span> root
+        <span class="token key atrule">mode</span><span class="token punctuation">:</span> <span class="token number">0644</span>
+      <span class="token key atrule">with_items</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">src</span><span class="token punctuation">:</span> <span class="token string">"httpd.conf"</span>
+          <span class="token key atrule">dest</span><span class="token punctuation">:</span> <span class="token string">"/etc/httpd/conf/httpd.conf"</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">src</span><span class="token punctuation">:</span> <span class="token string">"httpd-vhosts.conf"</span>
+          <span class="token key atrule">dest</span><span class="token punctuation">:</span> <span class="token string">"/etc/httpd/conf/httpd-vhosts.conf"</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Make sure Apache is started now and at boot.
+      <span class="token key atrule">service</span><span class="token punctuation">:</span> name=httpd state=started enabled=yes
+</code></pre>
+<p>The greater-than sign (<code>&gt;</code>) immediately following the command: module directive tells YAML “automatically quote the next set of indented lines as one long string, with each line separated by a space”.</p>
+<p>Running the playbook with the <code>--check</code> option (see the next section below) verifies the configuration matches what’s defined in the playbook, without actually running the tasks on the server.</p>
+<p>Ansible playbook command options:</p>
+<ul>
+<li><code>--limit</code> or <code>-l</code> limit the hosts or groups to run the playbook against</li>
+<li><code>--inventory=PATH</code> or <code>-i</code> define a custom inventory file</li>
+<li><code>--verbose</code> or <code>-v</code> verbose output</li>
+<li><code>--extra-vars=VARS</code> or <code>-e</code> extra vars in <code>key=value</code> format to be used in the playbook</li>
+<li><code>--forks=NUM</code> or <code>-f</code> number of forks to run the playbook using concurrently</li>
+<li><code>--connection=TYPE</code> <code>-c</code> e.g. ssh, local etc</li>
+<li><code>--check</code> dry run mode</li>
+<li><code>--list-hosts</code> to list the hosts targeted by the playbook.</li>
+<li><code>--remote-user</code> to connect as a specific remote user</li>
+<li><code>--become-user</code> to define the sudo user to become</li>
+<li><code>--ask-become-pass</code> to define the password to become sudo</li>
+<li><code>--become</code> to run all commands as sudo</li>
+</ul>
+<h3>Playbook Parameters</h3>
+<ul>
+<li><code>hosts: all</code> in a playbook means that the playbook will run against all hosts.</li>
+<li><code>remote_user</code> is used to set the user to connect as on the remote machine and overrides the inventory file
+<ul>
+<li>Sometimes you'll need to combine this with <code>--ask-become-pass</code></li>
+</ul>
+</li>
+</ul>
+<h2>Chapter 5 - Ansible Playbooks - Beyond the Basics</h2>
+<p>To notify multiple handlers from one task, use a list for the notify option:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Rebuild application configuration.
+  <span class="token key atrule">command</span><span class="token punctuation">:</span> /opt/app/rebuild.sh
+  <span class="token key atrule">notify</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> restart apache
+    <span class="token punctuation">-</span> restart memcached
+</code></pre>
+<p>To have one handler notify another, add a notify option onto the handler—handlers are basically glorified tasks that can be called by the notify option</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">handlers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> restart apache
+    <span class="token key atrule">service</span><span class="token punctuation">:</span> name=apache2 state=restarted
+    <span class="token key atrule">notify</span><span class="token punctuation">:</span> restart memcached
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> restart memcached
+    <span class="token key atrule">service</span><span class="token punctuation">:</span> name=memcached state=restarted
+</code></pre>
+<ul>
+<li>Handlers will only be run if a task notifies the handler.</li>
+<li>Handlers will run once, and only once, at the end of a play.</li>
+</ul>
+<p>It’s recommended you use a task’s register option to store the environment variable in a variable Ansible can use later, for example.</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">-name</span><span class="token punctuation">:</span> Add an environment variable to the remote user's shell.
+<span class="token key atrule">lineinfile</span><span class="token punctuation">:</span> <span class="token string">"dest=~/.bash_profile regexp=^ENV_VAR= line=ENV_VAR=value"</span>
+
+<span class="token key atrule">-name</span><span class="token punctuation">:</span> Get the value of the environment variable we just added. 
+ <span class="token key atrule">shell</span><span class="token punctuation">:</span> <span class="token string">'source ~/.bash_profile &amp;&amp; echo $ENV_VAR'</span>
+ <span class="token key atrule">register</span><span class="token punctuation">:</span> foo
+
+<span class="token key atrule">-name</span><span class="token punctuation">:</span> Print the value of the environment variable. 
+ <span class="token key atrule">debug</span><span class="token punctuation">:</span> msg="The variable is <span class="token punctuation">{</span><span class="token punctuation">{</span> foo.stdout <span class="token punctuation">}</span><span class="token punctuation">}</span>"
+</code></pre>
+<p>Linux will also read global environment variables added to /etc/environment:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Add a global environment variable.
+  <span class="token key atrule">lineinfile</span><span class="token punctuation">:</span> "dest=/etc/environment regexp=^ENV_VAR= \
+  line=ENV_VAR=value"
+  <span class="token key atrule">become</span><span class="token punctuation">:</span> yes
+</code></pre>
+<p>You can also define environment variables per play:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Download a file<span class="token punctuation">,</span> using example<span class="token punctuation">-</span>proxy as a proxy.
+  <span class="token key atrule">get_url</span><span class="token punctuation">:</span> url=http<span class="token punctuation">:</span>//www.example.com/file.tar.gz dest=~/Downloads/
+  <span class="token key atrule">environment</span><span class="token punctuation">:</span>
+    <span class="token key atrule">http_proxy</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//example<span class="token punctuation">-</span>proxy<span class="token punctuation">:</span>80/
+</code></pre>
+<p>You can pass an environment in via a variable in your playbook’s vars section:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">vars</span><span class="token punctuation">:</span>
+  <span class="token key atrule">var_proxy</span><span class="token punctuation">:</span>
+    <span class="token key atrule">http_proxy</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//example<span class="token punctuation">-</span>proxy<span class="token punctuation">:</span>80/
+    <span class="token key atrule">https_proxy</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//example<span class="token punctuation">-</span>proxy<span class="token punctuation">:</span>443/
+    <span class="token punctuation">[</span>etc<span class="token punctuation">...</span><span class="token punctuation">]</span>
+<span class="token key atrule">tasks</span><span class="token punctuation">:</span>
+<span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Download a file<span class="token punctuation">,</span> using example<span class="token punctuation">-</span>proxy as a proxy.
+  <span class="token key atrule">get_url</span><span class="token punctuation">:</span> url=http<span class="token punctuation">:</span>//www.example.com/file.tar.gz dest=~/Downloads/
+  <span class="token key atrule">environment</span><span class="token punctuation">:</span> var_proxy
+</code></pre>
+<p>To set environment variables system wide using <code>/etc/environment</code>:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token comment">#Inthe'vars'sectionoftheplaybook(setto'absent'todisablepro\ xy):</span>
+<span class="token key atrule">proxy_state</span><span class="token punctuation">:</span> present
+
+<span class="token comment">#Inthe'tasks'sectionoftheplaybook: </span>
+<span class="token punctuation">-</span> name<span class="token punctuation">:</span>Configuretheproxy.
+  <span class="token key atrule">lineinfile</span><span class="token punctuation">:</span>
+    <span class="token key atrule">dest</span><span class="token punctuation">:</span> /etc/environment
+    <span class="token key atrule">regexp</span><span class="token punctuation">:</span> <span class="token string">"{{ item.regexp }}"</span>
+    <span class="token key atrule">line</span><span class="token punctuation">:</span> <span class="token string">"{{ item.line }}"</span>
+    <span class="token key atrule">state</span><span class="token punctuation">:</span> <span class="token string">"{{ proxy_state }}"</span>
+  <span class="token key atrule">with_items</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">regexp</span><span class="token punctuation">:</span> <span class="token string">"^http_proxy="</span>
+      <span class="token key atrule">line</span><span class="token punctuation">:</span> <span class="token string">"http_proxy=http://example-proxy:80/"</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">regexp</span><span class="token punctuation">:</span> <span class="token string">"^https_proxy="</span>
+      <span class="token key atrule">line</span><span class="token punctuation">:</span> <span class="token string">"https_proxy=https://example-proxy:443/"</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">regexp</span><span class="token punctuation">:</span> <span class="token string">"^ftp_proxy="</span>
+      <span class="token key atrule">line</span><span class="token punctuation">:</span> <span class="token string">"ftp_proxy=http://example-proxy:80/"</span>
+</code></pre>
+<p>To test environment variables: <code>ansible test -m shell -a 'echo $TEST'</code></p>
+<h3>Variables</h3>
+<p>Can be passed in via the commandline using: <code>--extra-vars &quot;foo=bar&quot;</code></p>
+<p>You can set a <code>vars</code> section in the playbook:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">vars</span><span class="token punctuation">:</span>
+    <span class="token key atrule">foo</span><span class="token punctuation">:</span> bar
+
+<span class="token key atrule">tasks</span><span class="token punctuation">:</span>
+    <span class="token comment"># Prints "Variable 'foo' is set to bar".</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">debug</span><span class="token punctuation">:</span> msg="Variable 'foo' is set to <span class="token punctuation">{</span><span class="token punctuation">{</span> foo <span class="token punctuation">}</span><span class="token punctuation">}</span>"
+</code></pre>
+<p>Or you can use var files in playbooks:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">vars_files</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> vars.yml
+<span class="token key atrule">tasks</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">debug</span><span class="token punctuation">:</span> msg="Variable 'foo' is set to <span class="token punctuation">{</span><span class="token punctuation">{</span> foo <span class="token punctuation">}</span><span class="token punctuation">}</span>"
+</code></pre>
+<p>Variables may also be added via Ansible inventory files, either inline with a host definition, or after a group.  It is not recommended to use inventory files.  Use group_vars and host_vars YAML variable files within a specific path instead.</p>
+<h4>Setting Variables</h4>
+<p>Ansible allows you to use <code>register</code> to store the output of a particular command in a variable at runtime.</p>
+<h4>Accessing</h4>
+<p>Definition:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">foo_list</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> one
+  <span class="token punctuation">-</span> two
+  <span class="token punctuation">-</span> three
+</code></pre>
+<p>Accessing:</p>
+<pre class="language-yaml"><code class="language-yaml">foo<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+foo<span class="token punctuation">|</span>first
+</code></pre>
+<p>Or:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">{</span><span class="token punctuation">{</span> ansible_eth0.ipv4.address <span class="token punctuation">}</span><span class="token punctuation">}</span>
+<span class="token punctuation">{</span><span class="token punctuation">{</span> ansible_eth0<span class="token punctuation">[</span><span class="token string">'ipv4'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'address'</span><span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">}</span>
+</code></pre>
+<p>Ansible lets you define or override variables on a per-host or per-group basis.  This is easiest to do in the inventory file.</p>
+<h4>Other variables that ansible provides</h4>
+<ul>
+<li><code>groups</code>: A list of all group names in the inventory.</li>
+<li><code>group_names</code>: A list of all the groups of which the current host is a part.</li>
+<li><code>inventory_hostname</code>: The hostname of the current host, according to the inven-<br>
+tory (this can differ from ansible_hostname, which is the hostname reported by<br>
+the system).</li>
+<li><code>inventory_hostname_short</code>: The first part of inventory_hostname, up to the<br>
+first period.</li>
+<li><code>play_hosts</code>: All hosts on which the current play will be run.</li>
+</ul>
+<h3>Facts</h3>
+<p>Facts are variables derived from host system information. You can turn them off in a playbook by setting: <code>gather_facts: no</code>.  Doing so can be helpful for deploys with significant numbers of servers.   You can also manually add facts by adding INI or JSON files to <code>/etc/ansible/facts.d/</code>.  It’s often better to build your playbooks in a way that doesn’t rely (or care about) specific details of individual hosts.</p>
+<h3>Ansible Vault</h3>
+<p>Ansible vault encrypts sensitive data so that it can be committed and stored alongside the rest of your repository.</p>
+<p>You include and use the keys in the encrypted yaml file normally and Ansible decrypts them on the fly.</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">vars_files</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> vars/api_key.yml <span class="token comment"># encrypted yaml file</span>
+</code></pre>
+<ul>
+<li>Use <code>--ask-vault-pass</code> when running a playbook to have Ansible ask for the vault password at runtime</li>
+<li><code>ansible-vault edit &lt;file name 1&gt; &lt;file name 2&gt;</code> to edit the encrypted file
+<ul>
+<li>Additional commands are: <code>rekey</code> to change the password, <code>create</code>, <code>view</code>, or <code>decrypt</code>.</li>
+</ul>
+</li>
+</ul>
+<p>You can supply vault passwords via a password file located at: <code>∼/.ansible/vault_pass.txt</code> and set strict perms (<code>600</code>). You will need to pass the location using <code>--vault-password-file</code> flag.</p>
+<h3>Variable Precedence and Sane Defaults</h3>
+<p>• Roles should provide sane default values via the role’s ‘defaults’ variables. They are the fallback variables.<br>
+• Playbooks should never define variables but include them via <code>vars_files</code> or via inventory (in that preference order).<br>
+• Only host or group specific variables should be defined inventories.<br>
+• Dynamic and static inventories should be kept to a minimum<br>
+• Command line variables (-e) should be avoided unless testing locally and the like</p>
+<h3>Jinja, Python built-ins, and Logic</h3>
+<ul>
+<li>Jinja2
+<ul>
+<li>types include integers, floats, lists, tuples, and booleans</li>
+<li>math operations including addition, subtraction, multiplication and division, and comparisons</li>
+<li>object <code>foo is defined</code> for an object check
+<ul>
+<li><code>undefined</code>, <code>iterable</code>, and <code>equalTo</code> are also options</li>
+</ul>
+</li>
+<li>Logical operators: <code>and</code>, <code>or</code>, and <code>not</code></li>
+</ul>
+</li>
+<li>Python built-ins: when, changed_when, and failed_when
+<ul>
+<li>you can also invoke pthon built-in library functions</li>
+</ul>
+</li>
+<li><code>register</code> makes a play available to all plays once registered</li>
+<li><code>when</code> is a play conditional that checks a variable to decide if it should run: <code>when: is_db_server</code>.  It can use the result of prior plays.</li>
+<li>If you use the <code>command</code> or <code>shell</code> module without also using changed_when, Ansible will always report a change.</li>
+<li><code>failed_when</code> can be used to declare an actual failure and not a false positive</li>
+<li><code>ignore_errors</code> use to do just that</li>
+</ul>
+<h3>Delegation, Local Actions, and Pauses</h3>
+<ul>
+<li><code>delegate_to</code> allows you to delegate any task to a specific machine including the host.
+<ul>
+<li><code>local_action</code> is the easier method to delegate to localhost</li>
+<li><code>--connection=local</code> when wanting to run a playbook only against the local machine</li>
+</ul>
+</li>
+<li><code>wait_for</code> can be used to pause your playbook execution to wait</li>
+</ul>
+<h3>Prompts</h3>
+<p>You can use prompts to collect sensitive and non-sensitive data. Options include: <code>encrypt</code>, <code>confirm</code>, <code>salt_size</code>, <code>private</code>, and <code>default</code>.</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">vars_prompt</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> share_user
+      <span class="token key atrule">prompt</span><span class="token punctuation">:</span> <span class="token string">"What is your network username?"</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> share_pass
+      <span class="token key atrule">prompt</span><span class="token punctuation">:</span> <span class="token string">"What is your network password?"</span>
+      <span class="token key atrule">private</span><span class="token punctuation">:</span> yes
+</code></pre>
+<h3>Tags</h3>
+<p>Tags allow you to include or exclude particular roles, files, tasks, and plays.  Invoke <code>ansible-playbook</code> using <code>--tags</code> or <code>--skip-tags</code> and give it a comma separated string of tags: <code>&quot;one,two&quot;</code>.</p>
+<p>Use tags for a larger playbook's individual roles and plays.  However, generally avoid tags for individual tasks or includes.</p>
+<h3>Blocks</h3>
+<p>Blocks allow you to group related tasks together, using the same task parameters (<code>with_items</code>, <code>become</code>, etc) and allow you to handle errors inside of those blocks. r</p>
+<p>The rescue syntax is like so:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">tasks</span><span class="token punctuation">:</span> 
+    <span class="token punctuation">-</span> <span class="token key atrule">block</span><span class="token punctuation">:</span> 
+        <span class="token comment">#  do something here</span>
+      <span class="token key atrule">rescue</span><span class="token punctuation">:</span>
+        <span class="token comment"># rescue work here</span>
+      <span class="token key atrule">always</span><span class="token punctuation">:</span> 
+        <span class="token comment"># does what it says </span>
+</code></pre>
+<p>It may be easier to use <code>failed_when</code> to define acceptable failure conditions.</p>
+<h2>Chapter 6 - Playbook Organization - Roles, Includes, and Imports</h2>
+<h3>Imports</h3>
+<p>You can use the <code>import_tasks</code> directive to import tasks via a yaml file.</p>
+<p>Ansible will retrieve variables from the global scope or you can specifically define them when calling import:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">tasks</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">import_tasks</span><span class="token punctuation">:</span> user.yml
+    <span class="token key atrule">vars</span><span class="token punctuation">:</span>
+      <span class="token key atrule">username</span><span class="token punctuation">:</span> johndoe
+      <span class="token key atrule">ssh_private_keys</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token punctuation">{</span> <span class="token key atrule">src</span><span class="token punctuation">:</span> /path/to/johndoe/key1<span class="token punctuation">,</span> <span class="token key atrule">dest</span><span class="token punctuation">:</span> id_rsa <span class="token punctuation">}</span>
+        <span class="token punctuation">-</span> <span class="token punctuation">{</span> <span class="token key atrule">src</span><span class="token punctuation">:</span> /path/to/johndoe/key2<span class="token punctuation">,</span> <span class="token key atrule">dest</span><span class="token punctuation">:</span> id_rsa_2 <span class="token punctuation">}</span>
+</code></pre>
+<ul>
+<li>Use <code>import_tasks</code> if the tasks can be inlined before the playbook runs</li>
+<li>Use <code>include_tasks</code> if the tasks need to be more dynamic
+<ul>
+<li>As of Ansible <code>^2</code>, includes are evaluated dynamically</li>
+</ul>
+</li>
+<li>Handlers can be imported just like tasks</li>
+<li>Playbooks can be included in other playbooks at the top level of a playbook.</li>
+</ul>
+<p>Most of the time it is best to start with a monolithic playbook and then seperate things out into smaller task, handler, and playbooks to accomplish the job.</p>
+<h3>Roles</h3>
+<p>Ansible automatically includes <code>main.yml</code> files inside of the role directories.  The role directory structure is: <code>role_name</code> as the directory name for the role with sub-directories in that directory of <code>tasks</code> and <code>meta</code>.</p>
+<pre class="language-yml"><code class="language-yml"><span class="token punctuation">---</span> 
+<span class="token punctuation">-</span> hosts<span class="token punctuation">:</span>all
+  <span class="token key atrule">roles</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> role_name
+</code></pre>
+<pre><code></code></pre>
+
+    </div>
+</article>
+
+<style>
+    .content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .content-header {
+        margin-bottom: 3rem;
+    }
+
+    .title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .metadata {
+        margin: 1.5rem 0;
+    }
+
+    .primary-meta {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+        color: #ccc;
+    }
+
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .tag {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        display: inline-block;
+        transition: all 0.2s ease;
+    }
+
+    .tag:hover {
+        background-color: #e5e7eb;
+    }
+
+    .abstract {
+        font-size: 1.25rem;
+        color: #4b5563;
+        margin: 2rem 0;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .featured-image {
+        margin: 2rem auto;
+        text-align: center;
+        max-width: 700px;
+    }
+
+    .featured-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Specific image sizing based on image path */
+    img[src*="/books/"] {
+        max-width: 300px;
+    }
+
+    img[src*="/courses/"] {
+        max-width: 500px;
+    }
+
+    img[src*="/videos/"] {
+        max-width: 600px;
+    }
+
+    .content-body {
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: #1a1a1a;
+    }
+
+    @media (max-width: 768px) {
+        .title {
+            font-size: 2rem;
+        }
+
+        .abstract {
+            font-size: 1.125rem;
+        }
+
+        .featured-image {
+            max-width: 100%;
+        }
+        
+        img[src*="/books/"],
+        img[src*="/courses/"],
+        img[src*="/videos/"] {
+            max-width: 100%;
+            width: auto;
+        }
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2019 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

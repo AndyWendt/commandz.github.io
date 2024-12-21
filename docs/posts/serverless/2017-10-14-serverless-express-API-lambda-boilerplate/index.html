@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serverless Express API Boilerplate - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            Serverless Express API Boilerplate
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2017-10-14T00:00:00.000Z">14 Oct 2017</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">express</span>
+                
+                <span class="tag">serverless</span>
+                
+                <span class="tag">aws</span>
+                
+                <span class="tag">typescript</span>
+                
+                <span class="tag">cloudformation</span>
+                
+                <span class="tag">lambda</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>About nine months ago, we started development on a Node.js Serverless application hosted (if that is the proper term for serverless) on AWS Lambda. I started laying the architecture by writing code directly in the Lambda console, then I progressed to uploading zip files of the code, and then, finally, I found the Serverless framework.</p>
+<p>Before Serverless, I would manually (or via a script) create API endpoints in AWS API Gateway and then hook them up to the appropriate Lambda function.  While I was able to take advantage of shared code, it seemed as though I was reinventing the wheel; solving a problem that had already been solved.  I was.</p>
+<p>Serverless provided several significant advantages and improvements over creating our own in-house framework and deployment system.  It abstracted the process of deployment, CloudFormation template creation, and creation of API resources.</p>
+<p>Once we switched over to the Serverless Framework, it was smooth sailing for months.  We even converted our JS over to Typescript and implemented an end-to-end and unit test suite.  It was all coming together and it felt as though it was working splendidly.</p>
+<p>Until it didn't.</p>
+<p>We had been adding API Endpoints but also DynamoDB resources to the <code>serverless.yml</code> file.  While I had researched and recommended that this particular team switch over to using <a href="https://github.com/automategreen/dynamoose">Dynamoose</a> for creating the DynamoDB tables and for querying, it hadn't been implemented (priorities, priorities). In addition, we had continued to define API resources in the standard <code>serverless.yml</code> syntax.</p>
+<p>All this came to a head one day when one member of the team told me that we couldn't deploy.  Flabbergasted, I asked him why. It turned out that Serverless was telling us that we had a <code>Resource limit exceeded</code> error.  Digging a bit deeper, I found out that Cloudformation templates have a <a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html">maximum resource count</a> of 200 entities.</p>
+<p>Evidently, all of our <a href="https://serverless.com/framework/docs/providers/aws/events/apigateway/">API endpoints</a> combined with our <a href="https://serverless.com/framework/docs/providers/aws/guide/resources/">DynamoDB definitions</a> amounted to more than 200 resources.  This particular API wasn't even that big.</p>
+<p>What was a developer to do?</p>
+<p>Fortunately, I had found <a href="https://medium.com/trisfera/deploying-an-express-application-to-aws-lambda-the-easy-way-fa5fbef190ba">this article</a> earlier on Medium and I saw a way to define innumerable API endpoints without surpassing the Cloudformation Template limit.  So I put together a <a href="https://github.com/AndyWendt/serverless-express-example">boilerplate repo</a> that our team could base their work off of and it worked splendidly.</p>
+<p>One of the benefits was the ability to easily use an actual framework in our code that allowed for the usage of middlewares and other goodies. It reduced quite a bit of code that we'd need to maintain while improving the layout of the codebase.</p>
+<p>Along with that, it was easier to <a href="https://github.com/AndyWendt/serverless-express-example/blob/18cecdf23bc048c624948ecc218e6cab047f8af8/src/App.ts#L61-L64">define routes</a> and test them since they were located in one easy to use file (<code>App.ts</code> in this case). In addition, it allowed for an <a href="https://github.com/AndyWendt/serverless-express-example/blob/18cecdf23bc048c624948ecc218e6cab047f8af8/src/routes/HelloWorldController.ts">MVC like architecture</a> which improved not only our separation of concerns but also our ability to deliver code faster.</p>
+<p>All in all, it was a worthwile endeavor.  I hope this helps you out!</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2017 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

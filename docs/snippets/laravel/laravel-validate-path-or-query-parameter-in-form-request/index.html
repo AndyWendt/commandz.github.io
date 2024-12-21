@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Validate Path or Query Parameters in Form Requests - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            Laravel Validate Path or Query Parameters in Form Requests
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2019-03-01T00:09:09.000Z">01 Mar 2019</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">laravel</span>
+                
+                <span class="tag">php</span>
+                
+                <span class="tag">api</span>
+                
+                <span class="tag">validation</span>
+                
+                <span class="tag">snippet</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>Laravel by default does not provide an easy way to validate path and query parameters.  However, many times it is necessary to ensure that a particular ID or entity is valid before the controller method is called.  Given a <code>posts/{postId}</code> <a href="https://github.com/AndyWendt/laravel-validate-path-and-query-parameters-using-form-requests/blob/master/routes/api.php">route</a>, how would we validate the route parameter (<code>postId</code> in this case) and any query parameters provided by the client?</p>
+<p><a href="https://laravel.com/docs/5.8/validation">Laravel Form Requests</a> provide an easy way to do with with a small adjustment.  This <a href="https://stackoverflow.com/questions/30238285/laravel-5-how-to-validate-route-parameters">Stack Overflow answer</a> and <a href="https://stackoverflow.com/questions/52402139/laravel-5-7-override-all-method-in-request-validation-class-to-validate-rout">this one</a> show how to validate route parameters.  I added in the ability to validate query parameters as shown below.</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">// The rules to validate the payload and query/route parameters against</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">rules</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'post_id'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'required|exists:posts,id'</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'include'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'sometimes|numeric|nullable'</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'name'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'required|string'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Setup the validation of query/route parameters</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">all</span><span class="token punctuation">(</span><span class="token variable">$keys</span> <span class="token operator">=</span> <span class="token constant">null</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$data</span> <span class="token operator">=</span> <span class="token keyword static-context">parent</span><span class="token operator">::</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$data</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'post_id'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">route</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'postId'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$data</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'include'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">query</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'include'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token variable">$data</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>However, this can be improved quite easily by creating an <a href="https://github.com/AndyWendt/laravel-validate-path-and-query-parameters-using-form-requests/blob/master/app/Http/Requests/AbstractRequest.php">abstract request class</a> which all of your other requests can extend to make use of the query and path validation functionality.</p>
+<p>By changing the <code>all()</code> method in the abstract request class, we can easily define what query and path or route parameters that we want to be validated.  Consider the following <code>all()</code> method:</p>
+<pre class="language-php"><code class="language-php"><span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">all</span><span class="token punctuation">(</span><span class="token variable">$keys</span> <span class="token operator">=</span> <span class="token constant">null</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$data</span> <span class="token operator">=</span> <span class="token keyword static-context">parent</span><span class="token operator">::</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">foreach</span> <span class="token punctuation">(</span><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">routeParametersToValidate</span> <span class="token keyword">as</span> <span class="token variable">$validationDataKey</span> <span class="token operator">=></span> <span class="token variable">$routeParameter</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$data</span><span class="token punctuation">[</span><span class="token variable">$validationDataKey</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">route</span><span class="token punctuation">(</span><span class="token variable">$routeParameter</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">foreach</span> <span class="token punctuation">(</span><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">queryParametersToValidate</span> <span class="token keyword">as</span> <span class="token variable">$validationDataKey</span> <span class="token operator">=></span> <span class="token variable">$queryParameter</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$data</span><span class="token punctuation">[</span><span class="token variable">$validationDataKey</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">query</span><span class="token punctuation">(</span><span class="token variable">$queryParameter</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> <span class="token variable">$data</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>By overriding the properties in the extending class, we can define the query and route parameters that we'd like to validate.  Below is an example of the properties in the request class as well as example rules.</p>
+<pre class="language-php"><code class="language-php"><span class="token keyword">protected</span> <span class="token variable">$routeParametersToValidate</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string single-quoted-string">'post_id'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'postId'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">protected</span> <span class="token variable">$queryParametersToValidate</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string single-quoted-string">'include'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'include'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">rules</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'post_id'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'required|exists:posts,id'</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'include'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'sometimes|numeric|nullable'</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'name'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'required|string'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>You can see the <a href="https://github.com/AndyWendt/laravel-validate-path-and-query-parameters-using-form-requests">entire codebase here</a> as well as <a href="https://github.com/AndyWendt/laravel-validate-path-and-query-parameters-using-form-requests/blob/master/tests/Feature/PostTest.php">the tests</a>.</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2019 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

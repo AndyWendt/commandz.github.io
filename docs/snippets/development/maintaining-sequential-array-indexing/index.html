@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintaining Sequential Array Indexing While Removing Random Items - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            Maintaining Sequential Array Indexing While Removing Random Items
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2019-02-09T00:09:09.000Z">09 Feb 2019</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">performance</span>
+                
+                <span class="tag">algorithms</span>
+                
+                <span class="tag">data structures</span>
+                
+                <span class="tag">computer science</span>
+                
+                <span class="tag">java</span>
+                
+                <span class="tag">snippet</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>While implementing a randomized queue class for the <a href="/courses/algorithms/2019-02-09-princeton-coursera-algorithms-part1-week2/">Princeton Algorithms course</a>, I needed to maintain sequential array keys with non-null values. According to the requirements of the program, I could only use a limited subset of Java standard utilities.</p>
+<p>At first, I thought about using iteration to reset the array keys, but that would not allow the performance requirements of the program to be met.  The program required that the dequeue and enqueue operations work in constant time but using iteration would mean that they would happen in logarithmic or linear time.</p>
+<p>Of course, as with most things, the solution below is simple (but perhaps not easy to come up with on the fly).  When <code>dequeue()</code> is called, a random key is picked (via a random number generator), the item for the random key is saved to a variable, the item for the max key is moved to the random key, the item for the max key is set to null, and finally the item for the random key is returned.  This is accomplished with just a few operations rather than linear time.  Below is a snippet of the method and a <a href="https://github.com/AndyWendt/maintaining-array-indexes">full repository with tests is also available.</a>.  This code will only work if you don't care about the order in which the array is maintained.</p>
+<pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">dequeue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// find the keys</span>
+    <span class="token keyword">int</span> maxKey <span class="token operator">=</span> arrayCount <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> randomKey <span class="token operator">=</span> <span class="token function">randomArrayIndex</span><span class="token punctuation">(</span>arrayCount<span class="token operator">--</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// save the entry for the random key</span>
+    <span class="token class-name">String</span> string <span class="token operator">=</span> storage<span class="token punctuation">[</span>randomKey<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// move the max key entry to the random key</span>
+    storage<span class="token punctuation">[</span>randomKey<span class="token punctuation">]</span> <span class="token operator">=</span> storage<span class="token punctuation">[</span>maxKey<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// remove the entry for the max key</span>
+    storage<span class="token punctuation">[</span>maxKey<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> string<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2019 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 
