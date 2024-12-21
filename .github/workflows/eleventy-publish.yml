@@ -9,10 +9,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Copy CNAME to _site
-        run: cp CNAME _site/CNAME
-
+      - name: Move CNAME file
+        run: |
+          cp CNAME _site/CNAME && cp .nojekyll _site/.nojekyll
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
