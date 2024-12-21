@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Certified Developer Associate Notes - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1 class="title">AWS Certified Developer Associate Notes</h1>
+        
+        <div class="metadata">
+            <div class="primary-meta">
+                
+                <time datetime="2017-06-20T00:00:00.000Z">20 Jun 2017</time>
+                
+
+                
+                <span class="separator">•</span>
+                <span class="presenter">by ACloudGuru</span>
+                
+
+                
+            </div>
+
+            
+            <div class="tags-container">
+                
+                <span class="tag">architecture</span>
+                
+                <span class="tag">serverless</span>
+                
+                <span class="tag">cloud</span>
+                
+                <span class="tag">aws</span>
+                
+                <span class="tag">devops</span>
+                
+                <span class="tag">learning</span>
+                
+            </div>
+            
+        </div>
+
+        
+        <div class="abstract">
+            Notes on the AWS certified developer associate certification
+        </div>
+        
+
+        
+        <div class="featured-image">
+            <a href="https://read.acloud.guru/what-you-need-to-get-aws-certified-5937e613b10f#.3cpabqpyq" target="_blank" rel="noopener">
+                <img src="/images/courses/aws/aws.png" alt="AWS Certified Developer Associate Notes">
+            </a>
+        </div>
+        
+    </header>
+
+    <div class="content-body">
+        <h1>AWS Certified Developer Associate</h1>
+<ul>
+<li><a href="https://read.acloud.guru/what-you-need-to-get-aws-certified-5937e613b10f#.3cpabqpyq">https://read.acloud.guru/what-you-need-to-get-aws-certified-5937e613b10f#.3cpabqpyq</a></li>
+<li><a href="http://www.rightbrainnetworks.com/blog/tips-for-passing-amazon-aws-certified-solutions-architect-exam/">http://www.rightbrainnetworks.com/blog/tips-for-passing-amazon-aws-certified-solutions-architect-exam/</a></li>
+<li><a href="http://venturebeat.com/2015/05/17/why-youll-never-nail-that-devops-interview/">http://venturebeat.com/2015/05/17/why-youll-never-nail-that-devops-interview/</a></li>
+</ul>
+<p>90% compute capacity on internet provided by AWS.</p>
+<p>AWS certifications are the most popular IT certifications.</p>
+<p>AWS changes and updates are growing exponentialy.</p>
+<hr>
+<p><a href="https://aws.amazon.com/certification/certified-developer-associate/">https://aws.amazon.com/certification/certified-developer-associate/</a></p>
+<hr>
+<h2>AWS History</h2>
+<p>AWS having a massive effect on traditional services.</p>
+<p>1000+ new service announcements on AWS</p>
+<p>Blog: <a href="https://aws.amazon.com/blogs/aws/">https://aws.amazon.com/blogs/aws/</a></p>
+<p>Google certs coming out in 2017 and 2018</p>
+<hr>
+<h2>AWS 10,000 Feet Overview</h2>
+<p>In order to pass the exam, you need to pay attention to these AWS service areas:</p>
+<ul>
+<li>Messaging</li>
+<li>Security &amp; Identity</li>
+<li>Management Tools</li>
+<li>Storage</li>
+<li>Databases</li>
+<li>Networking &amp; Content Delivery</li>
+<li>Compute</li>
+<li>AWS Global Infrastructure</li>
+</ul>
+<h3>AWS Global Infrastructure</h3>
+<p><em>Region:</em> is a geographical area. Each region consists of 2 or more availability zones<br>
+<em>Availability Zone:</em> is simply a data center<br>
+<em>Edge locations:</em> are CDN end points for CloudFront</p>
+<p>There are many more edge locations than regions.</p>
+<h3>Network and Content Delivery</h3>
+<h4>VPCs (Virtual Private Cloud)</h4>
+<p>A virtual datacenter</p>
+<p>Multiple VPCs per region.  Can connect one VPC up to another.</p>
+<p><em>BIG PART OF EXAM!</em></p>
+<p>Need to be able to build a VPC from memory</p>
+<h4>Route53 (DNS Service)</h4>
+<h4>Cloudfront (caching)</h4>
+<h4>Direct Connect</h4>
+<p>Connecting your office or data center to AWS</p>
+<h3>Compute</h3>
+<p>EC2: Elastic Compute Cloud (VMs in the cloud)</p>
+<p>EC2 Container Services: not in test</p>
+<p>Elastic Beanstalk: <em>comes up in developer exam quite a bit</em></p>
+<p>Lambda: not in the test</p>
+<p>Lightsail: wp or joomla.  not in the test</p>
+<h3>Storage</h3>
+<p>S3: Virtual disk in the cloud. Where you can store objects.  Not block based storage</p>
+<p>Glacier: archive for S3</p>
+<p>EFS: Block based storage, could install databases and applications.</p>
+<p>Storage gateway: a way of connecting S3 to on-premise data center</p>
+<h3>Database</h3>
+<p>RDS: postgres, aurora, mysql, etc (not much in dev exam)</p>
+<p>DynamoDB: (<em>features heavily on test</em>)</p>
+<p>Redshit: big data storage/archival for storing data for running reports on so that it doesn't slow down your prod db</p>
+<p>Elasticache: a way to cache data in the cloud. Db calls and resources such as generated html and images (<em>comes up in dev exam</em>)</p>
+<p>Snowball: transfer physical disks to S3.</p>
+<p>DMS: database migration service, don't have to stay with the database that you're migrating from (e.g. Oracle to MySql)</p>
+<p>SMS: server migration service. Moving VMs out to the cloud</p>
+<p>Athena: allows you to run SQL queries on csv or json on s3</p>
+<p>EMR: used to process large amounts of data (using hadoop)</p>
+<p>Cloud Search: fully managed</p>
+<p>Elastic Search: using an open source framework</p>
+<p>Kinesis: streaming and analyzing data real time</p>
+<p>Data Pipeline: allows you to move data from one place to another. e.g. s3 to dyanmodb</p>
+<p>Quick Sight: business analytics tool</p>
+<h3>Security &amp; Identity</h3>
+<p>IAM: how you sign-up or authenticate</p>
+<p>Inspector: installs on your VMs and reports on the security thereof</p>
+<p>Certificate Manager: gets you free SSL certs for your domain name</p>
+<p>Directory Service: Active directory to AWS connection</p>
+<p>WAF: web application firewall, application level protection (SQL injection, etc) Doesn't feature in the exams</p>
+<p>ARtifacts: documentation in the AWS console, get certifications (PCI etc)</p>
+<h3>Management Tools</h3>
+<p>Cloud Watch: EC2 disk and ram utilization etc</p>
+<p>Cloud Formation: way of turning your infrastructure into code (need to know it inside and out for the real world) Doesn't come up in the exams too much</p>
+<p>Cloud Trail: used for auditing changes to your AWS (IAM changes etc)</p>
+<p>OpsWorks: Way of automating deployments using chef</p>
+<p>Config: way of auditing your environment, you can set alerts etc</p>
+<p>Service Catalog: for larger orgs, place for images.  Authorize images and what aren't</p>
+<p>Trusted Advisor: cost and performance optimizations</p>
+<h3>Application SErvices</h3>
+<p>Step Functions: way of visualizing wahat's going on your app</p>
+<p>SWF: coordinating human tasks and computer tasks (<em>in exams</em>)</p>
+<p>API Gateway: door for you apps to access backend</p>
+<p>Elastic Transcoder: transcodes media into different formats</p>
+<h3>Developer Tools</h3>
+<p>CodeCommit: git</p>
+<p>CodeBuild: compiling your code</p>
+<p>CodeDeploy: deploying your code</p>
+<p>CodePipeLine: keeping track of your different versions</p>
+<h3>Mobile Services</h3>
+<p>Mobile Hub: console for mobile apps</p>
+<p>Cognito: makes easy to sign up with apps</p>
+<p>Device Farm: testing on real devices</p>
+<p>Mobile Analytics: analyzing mobile data</p>
+<p>Pinpoint: google analytics for mobile</p>
+<h3>Internet of Things</h3>
+<p>iOT: own cert?</p>
+<h3>Artificial Intelligence</h3>
+<p>SuperIntelligence by Nick Bostrom on AI</p>
+<p>Alexa: voice services in the cloud (driven by lex)</p>
+<p>Polly: text to speach as a service</p>
+<p>Machine Learning: data sets given outcomes analysis</p>
+<p>Rekognition: image recognition, and faces</p>
+<h3>Messaging</h3>
+<p>SNS: messagin</p>
+<p>SQS: queue system</p>
+<p>SES: simple email service</p>
+<hr>
+<h2>IAM</h2>
+<ul>
+<li>Centralized control of your AWS account</li>
+<li>Shared access to your AWS account</li>
+<li>Granular Permissions</li>
+<li>Identity Federation (including Active Directory, Facebook, Linkedin, etc)</li>
+<li>Multifactor auth</li>
+<li>Provide temp access for users/devices and services where necessary</li>
+<li>Allows you to set up your own password rotation policy</li>
+<li>Integrates with AWS services</li>
+<li>Supports PCI DSS compliance</li>
+</ul>
+<p>IAM is global and is not bound by region</p>
+<h3>Terms</h3>
+<ul>
+<li>Users</li>
+<li>Groups - a collection of users under one set of permissions</li>
+<li>Roles - you create roles and can then assign them to AWS resources (e.g. an EC2 instance) for service to service interaction permissions
+<ul>
+<li>Three types</li>
+<li>Service roles - inter AWS account</li>
+<li>Cross-account</li>
+<li>Identity Provider - access to AWS resources for FB, Google, Twitter authenticators, etc</li>
+</ul>
+</li>
+<li>Policies - a document that defines one or more permissions</li>
+</ul>
+<h3>Root Account</h3>
+<p>Only ever login once or twice when you need to</p>
+<p>Use MFA - google authenticator</p>
+<hr>
+<h3>Security Token Service (STS)</h3>
+<p>Grants users limited and temp access to AWS resources. Users can come from three sources</p>
+<p><em>Most of the time you have to develop your own identity brokers</em></p>
+<p><em>Review Information on identity brokers before exam</em></p>
+<p>GetFederationToken function using IAM credentials -&gt; duration 1 to 36 hours</p>
+<p>Just need to have a basic understanding of how it works</p>
+<h3>SAML/Active Directory</h3>
+<p>Active directory federation</p>
+<p>Takeaways:</p>
+<ol>
+<li>can you auth with active directory: yes and it is using SAML</li>
+<li>are you authenticating to active directory first and then given a temp security credential or if you get the temp credential first and then authenticated against active directory
+<ul>
+<li>you always authenticate against AD first</li>
+</ul>
+</li>
+</ol>
+<p>The AWS sign-in endpoint for SAML is <a href="https://signin.aws.amazon.com/saml">https://signin.aws.amazon.com/saml</a></p>
+<p>SAML stands for Security Assertion Markup Language.</p>
+<p><a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_enable-console-saml.html">http://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_enable-console-saml.html</a></p>
+<p><a href="https://aws.amazon.com/blogs/aws/aws-identity-and-access-management-using-saml/">https://aws.amazon.com/blogs/aws/aws-identity-and-access-management-using-saml/</a></p>
+<h3>Web Identity Federation</h3>
+<p>You just need to know that you can authenticate your applications against FB, LinkedIn, Google, etc</p>
+<p>You have to do a fair bit of coding.</p>
+<p>You basically need to know if it is possible.</p>
+<p><em>EXAM:</em> You authenticate first with your identity provider, then you get your security credential, then you call AssumeRoleWithWebIdentity, and then you can access AWS resources</p>
+<p><a href="https://aws.amazon.com/iam/">https://aws.amazon.com/iam/</a></p>
+<p><em>EXAM:</em> AssumeRoleWithWebIdentity</p>
+<hr>
+<h2>EC2</h2>
+<ul>
+<li>Most important part of any of the associate exams*</li>
+</ul>
+<p>VMs in the cloud</p>
+<p>Instance Types: Dirty MCG</p>
+<p>Dr mcgift pic give out pictures of his homeland in Scottland.</p>
+<p>Going to get scenarios to choose the correct instance</p>
+<p>Instance numbers are the generation</p>
+<h3>EBS</h3>
+<p>In specific AZs</p>
+<hr>
+<h3>Launching an instance</h3>
+<p>Two types of virtualization:</p>
+<ul>
+<li>PV - para-virtualization</li>
+<li>HVM - hyper-virtualization</li>
+</ul>
+<p>Need to know how to create a VPC from memory</p>
+<p>EXAM: <em>One Subnet is always equal to one availability Zone</em></p>
+<p>A subnet cannot go across multiple AZs</p>
+<p>EXAM: <em>By default, EBS volumes are deleted on EC2 instance termination.</em>  <code>Delete on Termination</code> checkbox</p>
+<p>Tags are good to control costs. Tag everything.</p>
+<p>Security groups are virtual firewalls</p>
+<p>ssh -i ~/.ssh/aws-andy.pem <a href="mailto:ec2-user@34.211.66.99">ec2-user@34.211.66.99</a></p>
+<p><code>yum update -y</code></p>
+<p><code>yum install httpd</code><br>
+<code>service httpd start</code><br>
+<code>chkconfig httpd on</code></p>
+<p><em>Status Checks</em></p>
+<ul>
+<li>System status checks
+<ul>
+<li>verifies that the instance is reacheable. No AWS or infrastructure problems</li>
+</ul>
+</li>
+<li>Instance status checks
+<ul>
+<li>verifies that the instance OS is accepting packets</li>
+</ul>
+</li>
+</ul>
+<p>Can't encrypt the root device volume unless you create an AMI and encrypt it yourself</p>
+<p>You can't encrypt the AMIs provided by Amazon</p>
+<hr>
+<h3>Security Groups</h3>
+<p>1 instance can have multiple security groups</p>
+<p>Security group changes happen immediately</p>
+<p><em>Inbound rules are automatically allowed back out, they are stateful</em></p>
+<p>With VPCs and NACLs (network access control lists), they are stateless - you must define both in and outbound roules</p>
+<p><em>Everything is blocked by default</em></p>
+<p><em>Security groups are per region!</em></p>
+<h3>Key pairs</h3>
+<p>SSH key pairs are per region!</p>
+<hr>
+<h3>Volumes and Snapshots</h3>
+<p>You must keep the volume in the same AZ as the EC2 instance.</p>
+<pre><code>lsblk
+cd / &amp;&amp; mkdir myfileserver
+
+# check the volume for data
+file -s /dev/xvdf # if response is `/dev/xvdf: data` then there is no data on it
+
+# format the device
+mkfs -t ext4 /dev/xvdf
+
+# mount
+mount /dev/xvdf /myfileserver
+
+# unmount
+
+umount /dev/xvdf
+</code></pre>
+<p>Volume snapshots are incremental changes.</p>
+<p>If you make a snapshot into a volume again, you're not locked into the same storage medium.</p>
+<hr>
+<h3>EFS (Elastic File System)</h3>
+<p>Allows you to connect a volume to multiple EC2 instances</p>
+<p>Data is stored across multiple AZ's</p>
+<p>EC2 instances need to be in the same security group as the EFS volume</p>
+<p><a href="http://docs.aws.amazon.com/efs/latest/ug/mounting-fs.html">http://docs.aws.amazon.com/efs/latest/ug/mounting-fs.html</a></p>
+<p><a href="http://docs.aws.amazon.com/efs/latest/ug/troubleshooting.html">http://docs.aws.amazon.com/efs/latest/ug/troubleshooting.html</a></p>
+<p>Need to allow NFS on SGs for both NFSs and EC2 instances: <a href="http://docs.aws.amazon.com/efs/latest/ug/accessing-fs-create-security-groups.html">http://docs.aws.amazon.com/efs/latest/ug/accessing-fs-create-security-groups.html</a></p>
+<p>You're using EFS as a fileserver - multiple ec2</p>
+<p>user level perms and directory level perms</p>
+<p>universal across all instances</p>
+<hr>
+<h3>IAM Roles</h3>
+<p>IAM Roles are Global <em>EXAM</em></p>
+<p>You can attach/replace a role on a running EC2 instance</p>
+<p>roles are better than programmatic key access.</p>
+<hr>
+<h3>CLI Commands</h3>
+<p><em>EXAM</em> Remember language of commands. i.e. what the command phraseology is</p>
+<p><a href="http://docs.aws.amazon.com/cli/latest/reference/ec2/">http://docs.aws.amazon.com/cli/latest/reference/ec2/</a></p>
+<p><code>start-instances</code> &amp;&amp; <code>stop-instances</code> only starts or stops an instance and doesn't create them.</p>
+<p><code>run-instances</code> creates and starts instances.</p>
+<p><a href="http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-images.html">http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-images.html</a></p>
+<p>ws ec2 run-instances --image-id ami-4836a428 --count 1 --instance-type t2.micro --key-name aws-andy --security-group-ids sg-29674452 --subnet-id subnet-c0da9998</p>
+<p>aws ec2 describe-images --owners amazon --filters &quot;Name=platform,Values=windows&quot; &quot;Name=root-device-type,Values=ebs&quot;</p>
+<hr>
+<h3>Instance Meta Data</h3>
+<p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html</a></p>
+<p><em>EXAM</em>  Need to know url to access instance meta data</p>
+<p><a href="http://169.254.169.254/latest/meta-data/public-ipv4">http://169.254.169.254/latest/meta-data/public-ipv4</a></p>
+<p>Looking for meta data, not user data</p>
+<h3>Load Balancer</h3>
+<p>Two types of load balancers</p>
+<ul>
+<li>Application
+<ul>
+<li>Works at layer 7 and the preferred method.</li>
+</ul>
+</li>
+<li>Classic
+<ul>
+<li>Layer 4 - TCP-IP (can do some layer 7 briging but it's essentially layer 4)</li>
+</ul>
+</li>
+</ul>
+<p>You don't get an IP address for an ELB, only a DNS name.</p>
+<p>Exam questions will be focused around classic load balancers, <em>most likely</em></p>
+<p><a href="https://aws.amazon.com/elasticloadbalancing/classicloadbalancer/faqs/">https://aws.amazon.com/elasticloadbalancing/classicloadbalancer/faqs/</a></p>
+<p><a href="https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/faqs/">https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/faqs/</a></p>
+<h3>Tools</h3>
+<p><a href="https://aws.amazon.com/tools/">https://aws.amazon.com/tools/</a></p>
+<p>Browse around SDK's</p>
+<p>Know the available SDK's</p>
+<h3>Review</h3>
+<p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Storage.html">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Storage.html</a></p>
+<p><a href="https://aws.amazon.com/ec2/">https://aws.amazon.com/ec2/</a></p>
+<p><a href="https://aws.amazon.com/blogs/security/how-to-protect-data-at-rest-with-amazon-ec2-instance-store-encryption/">https://aws.amazon.com/blogs/security/how-to-protect-data-at-rest-with-amazon-ec2-instance-store-encryption/</a></p>
+<p><a href="http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html">http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html</a></p>
+<p><a href="http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/ssl-server-cert.html">http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/ssl-server-cert.html</a></p>
+<p><a href="http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/ssl-server-cert.html">http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/ssl-server-cert.html</a></p>
+<p><a href="https://aws.amazon.com/cloudfront/custom-ssl-domains/">https://aws.amazon.com/cloudfront/custom-ssl-domains/</a></p>
+<hr>
+<h2>S3</h2>
+<p>S3 Object tagging:</p>
+<p><a href="https://aws.amazon.com/s3/faqs/?campaign-id=s3console&amp;sc_ichannel=ha&amp;sc_icampaign=f90_serviceconsole_s3_90days&amp;sc_icontent=2580&amp;sc_iplace=en_s3_ed&amp;trk=ha_f90_serviceconsole_s3_default_2580/#storage-management">https://aws.amazon.com/s3/faqs/?campaign-id=s3console&amp;sc_ichannel=ha&amp;sc_icampaign=f90_serviceconsole_s3_90days&amp;sc_icontent=2580&amp;sc_iplace=en_s3_ed&amp;trk=ha_f90_serviceconsole_s3_default_2580/#storage-management</a></p>
+<h3>101</h3>
+<p>Updates to S3 are atomic, you might get the new data or the old data. New objects are immediately available.</p>
+<p>S3 is designed to sort in alpha order. Adding random letters and numbers at the start of a filename ensures and even sort order.</p>
+<p>Storage Tiers/Classes will come up in the exam</p>
+<p><a href="https://aws.amazon.com/s3/faqs/">https://aws.amazon.com/s3/faqs/</a></p>
+<p>^^^ <em>Read S3 FAQs for Exam</em></p>
+<h3>Creating a website</h3>
+<p><em>EXAM</em> Need to know ARN that would be generated for an s3 bucket website</p>
+<p>Need to make sure objects are public.</p>
+<h3>Cors</h3>
+<p>Allows code in one S3 bucket to access the code in another S3 bucket.</p>
+<p>Make sure that you are using the website url and not the S3 url!</p>
+<h3>Versioning</h3>
+<p><em>EXAM</em> You cannot remove versioning, you can only disable it.</p>
+<p>Versions are essentially two or more different objects in a bucket.</p>
+<p>Don't have versioning turned on with large files without a lifecycle management policy!</p>
+<p>If you delete the current version, it automatically goes back to the previous version</p>
+<h3>Cross Region Replication</h3>
+<p>Versioning must be enabled on both buckets if you are to use versioning.</p>
+<p><em>ONLY new objects will be replicated</em>.  Not existing - but it will replicate all versions when there is a new version of an object.</p>
+<p>Deleting delete markers does not replicate to other buckets.</p>
+<h3>Lifecycle Management</h3>
+<h3>Cloudfront</h3>
+<p>First request/user suffers the performance penalty until the data is cached in the edge location for the time of the TTL for the second request/user.</p>
+<p>Origins can be someone else's server.  You can also write to Edge locations</p>
+<p>WAF Web ACL allows you to stop certain attacks such as SQL injection etc</p>
+<p>GEO Restrictions on the exam about Cloudfront</p>
+<h3>Security and Encryption</h3>
+<p>Need to know the 4 types of encryption!</p>
+<h3>Storage Gateway</h3>
+<p>Exam questions haven't been updated to current terminology possibly.</p>
+<p>Review storage gateway</p>
+<p>Virtual Tape Library sits on S3 - instantaneous</p>
+<p>Virtual Tape Shelf sits on Glacier - 24 hours</p>
+<h3>Snowball</h3>
+<p>Snowball - 50TB or 70TB data transfer appliance</p>
+<p>Snowball Edge - 100TB + compute (think Lambda functions) appliance</p>
+<p>Snowmobile - Exabyte scale data transfer</p>
+<h3>Transfer Acceleration</h3>
+<p>Upload to an Edge location</p>
+<h3>S3 Summary</h3>
+<p><a href="https://aws.amazon.com/s3/">https://aws.amazon.com/s3/</a></p>
+<p>S3 website bucket url format: <a href="http://bucketname.s3-website.eu-west-2.amazonaws.com">http://bucketname.s3-website.eu-west-2.amazonaws.com</a></p>
+<p>S3 bucket url format: <a href="https://s3.eu-west-2.amazonaws.com/bucketname">https://s3.eu-west-2.amazonaws.com/bucketname</a></p>
+<p>Largest file that can be PUT is 5GB</p>
+<p>Largest file that can be stored is 5TB</p>
+<p>Smallest file size for regular S3 is 0B</p>
+<p>Smallest file size for IA is 128KB</p>
+<p>Pay-as-you-go pricing and unlimited capacity</p>
+<h2>Database Essentials</h2>
+<p>Six relational databases on AWS</p>
+<p><strong>Look up OLAP</strong></p>
+<p>Questions about how to improve the performance of a DB</p>
+<p>DMS converts Oracle and other databases to free open source DBs</p>
+<p><a href="https://aws.amazon.com/rds/faqs/">https://aws.amazon.com/rds/faqs/</a></p>
+<h2>Dynamo DB</h2>
+<p>Spread across 3 data center</p>
+<p>If your data can wait for up to a second to be updated, then eventually consistent works just fine. Otherwise, use strongly consistent.</p>
+<p>You can have up to 35 levels of nesting in DynamoDB data</p>
+<p>Hash key is the same thing as the partition key but it is the older term</p>
+<p>DynamoDB Streams only stored for 24 hours</p>
+<p>When primary key is unique then each item is stored a different area in DynamoDB</p>
+<p>You can scale quickly with DynamoDB</p>
+<p>You can only create a LSI (up to 5) at the time of table creation.  GSIs (up to 5) can be created anytime</p>
+<p>You can't delete an LSI but you can delete GSIs</p>
+<h3>Queries and Scans</h3>
+<p>ScanIndexForward to change the sort order <strong>exam</strong> ONLY ON A QUERY!</p>
+<p>Can use the <code>ProjectionExpression</code> to limit the results of a scan</p>
+<h3>Provisioned Througput</h3>
+<p>You will be asked about this on the exams and you will be given scenarios to solve for.</p>
+<p>Capacities must be even integers.</p>
+<p>The formula is: <code>(Size of Read rounded to nearest 4 KB chunk / 4kb) x no of items = read throughput</code></p>
+<p>Divide by 2 if eventually consistent.</p>
+<p>400 HTTP Status Code - ProvisionedThroughputExceededException</p>
+<h3>Web Identity Providers</h3>
+<p>Uses the AssumeRoleWithWebIdentity API</p>
+<p>Can connect from 15 minutes to 1 hour</p>
+<p>Need to remember basic steps to authenticate</p>
+<h3>Other facts</h3>
+<p>Conditional writes: if item.price == 10 then update else don't</p>
+<p>Atomic Counters are not idempotent.</p>
+<p>Use Atomic counters if you don't need 100% data accuracy (think website counter); use conditional writes if you do need 100% accuracy.</p>
+<h3>Summary</h3>
+<p>Most important topic!</p>
+
+    </div>
+</article>
+
+<style>
+    .content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .content-header {
+        margin-bottom: 3rem;
+    }
+
+    .title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .metadata {
+        margin: 1.5rem 0;
+    }
+
+    .primary-meta {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+        color: #ccc;
+    }
+
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .tag {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        display: inline-block;
+        transition: all 0.2s ease;
+    }
+
+    .tag:hover {
+        background-color: #e5e7eb;
+    }
+
+    .abstract {
+        font-size: 1.25rem;
+        color: #4b5563;
+        margin: 2rem 0;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .featured-image {
+        margin: 2rem auto;
+        text-align: center;
+        max-width: 700px;
+    }
+
+    .featured-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Specific image sizing based on image path */
+    img[src*="/books/"] {
+        max-width: 300px;
+    }
+
+    img[src*="/courses/"] {
+        max-width: 500px;
+    }
+
+    img[src*="/videos/"] {
+        max-width: 600px;
+    }
+
+    .content-body {
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: #1a1a1a;
+    }
+
+    @media (max-width: 768px) {
+        .title {
+            font-size: 2rem;
+        }
+
+        .abstract {
+            font-size: 1.125rem;
+        }
+
+        .featured-image {
+            max-width: 100%;
+        }
+        
+        img[src*="/books/"],
+        img[src*="/courses/"],
+        img[src*="/videos/"] {
+            max-width: 100%;
+            width: auto;
+        }
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2017 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

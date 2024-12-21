@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How do I test error redirection logic? - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            How do I test error redirection logic?
+            
+            <span class="unpublished-badge">Unpublished</span>
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2020-05-07T00:09:09.000Z">07 May 2020</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">object oriented</span>
+                
+                <span class="tag">oo</span>
+                
+                <span class="tag">architecture</span>
+                
+                <span class="tag">frameworks</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>Awhile back I was working on a side project and I started to write a simple controller method.  I have been away from Laravel<br>
+land for a bit and I've been working predominantly on Ruby on Rails projects so I was wondering if Laravel had any new ways to write<br>
+a fast yet effective acceptance test.</p>
+<p>Turns out that <a href="https://laravel.com/docs/7.x/http-tests">HTTP Tests</a> are still the goto method for testing controller methods so<br>
+I wrote a test.</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">/**
+* @test
+*/</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">it_creates_a_charge</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$name</span> <span class="token operator">=</span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">name</span><span class="token punctuation">;</span>
+    <span class="token variable">$email</span> <span class="token operator">=</span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">email</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/charge'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'token'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'tok_visa'</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'name'</span> <span class="token operator">=></span> <span class="token variable">$name</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'email'</span> <span class="token operator">=></span> <span class="token variable">$email</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'productId'</span> <span class="token operator">=></span> <span class="token class-name static-context">Product</span><span class="token operator">::</span><span class="token constant">MY_PRODUCT_ID</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span><span class="token operator">-></span><span class="token function">assertRedirect</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"/charge-success"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">assertDatabaseHas</span><span class="token punctuation">(</span>
+        <span class="token string single-quoted-string">'orders'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+            <span class="token string single-quoted-string">'name'</span> <span class="token operator">=></span> <span class="token variable">$name</span><span class="token punctuation">,</span>
+            <span class="token string single-quoted-string">'product_id'</span> <span class="token operator">=></span> <span class="token class-name static-context">Product</span><span class="token operator">::</span><span class="token constant">MY_PRODUCT_ID</span><span class="token punctuation">,</span>
+            <span class="token string single-quoted-string">'amount'</span> <span class="token operator">=></span> <span class="token number">10</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Everything seemed to be going well.  The test was easy and relatively painless to write.  However, I did notice that the errors were less than desirable for detecting what actually failed.  However, I figured that the cost in this instance was worth it.</p>
+<p>Once I had a failing test, after a few TDD cyles I got to the following implementation.</p>
+<pre class="language-php"><code class="language-php"><span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">charge</span><span class="token punctuation">(</span><span class="token class-name type-declaration">PaymentAdapter</span> <span class="token variable">$paymentAdapter</span><span class="token punctuation">,</span> <span class="token class-name type-declaration">OrderQueryObject</span> <span class="token variable">$orderQueryObject</span><span class="token punctuation">,</span> <span class="token class-name type-declaration">Mailer</span> <span class="token variable">$mailer</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$token</span> <span class="token operator">=</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'stripeToken'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$productId</span> <span class="token operator">=</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'productId'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$customer</span> <span class="token operator">=</span> <span class="token class-name static-context">Customer</span><span class="token operator">::</span><span class="token function">fromRequest</span><span class="token punctuation">(</span><span class="token variable">$request</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$charge</span> <span class="token operator">=</span> <span class="token variable">$paymentAdapter</span><span class="token operator">-></span><span class="token function">charge</span><span class="token punctuation">(</span><span class="token variable">$token</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token punctuation">,</span> <span class="token variable">$productId</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$orderQueryObject</span><span class="token operator">-></span><span class="token function">add</span><span class="token punctuation">(</span><span class="token variable">$customer</span><span class="token punctuation">,</span> <span class="token variable">$charge</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$mailer</span><span class="token operator">-></span><span class="token function">sendOrderConfirmation</span><span class="token punctuation">(</span><span class="token variable">$charge</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token function">redirect</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"/charge-success"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>So far, so good.  Then I thought of the failure cases.  I decided to handle the general case first so I mocked the PaymentAdapter to throw a general exception.</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">/**
+* @test
+*/</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">it_redirects_back_when_an_exception_is_thrown</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment"># setup code removed for brevity</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">PaymentAdapter</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'charge'</span><span class="token punctuation">)</span>
+                <span class="token operator">-></span><span class="token function">andThrow</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">InvalidArgumentException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/charge'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span> <span class="token comment">/* payload same as above */</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment"># additional assert code removed for brevity</span>
+    <span class="token variable">$response</span><span class="token operator">-></span><span class="token function">assertRedirect</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Coarse grained</p>
+<hr>
+<p>Here recently, I was reviewing some code that I had written awhile back for a checkout system.  The needs were fairly simple.  All the system really had to do has accept a charge for a single digital item what would be downloaded.  Seemed fairly simple so I started with an acceptance test to assert that the charge would happen.</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">/**
+* @test
+*/</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">it_charges_a_customer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$name</span> <span class="token operator">=</span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">name</span><span class="token punctuation">;</span>
+    <span class="token variable">$email</span> <span class="token operator">=</span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">email</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/charge'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'token'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'tok_visa'</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'name'</span> <span class="token operator">=></span> <span class="token variable">$name</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'email'</span> <span class="token operator">=></span> <span class="token variable">$email</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'productId'</span> <span class="token operator">=></span> <span class="token class-name static-context">Product</span><span class="token operator">::</span><span class="token constant">MY_PRODUCT_ID</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span><span class="token operator">-></span><span class="token function">assertRedirect</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"/charge-success"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">assertDatabaseHas</span><span class="token punctuation">(</span>
+        <span class="token string single-quoted-string">'orders'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+            <span class="token string single-quoted-string">'name'</span> <span class="token operator">=></span> <span class="token variable">$name</span><span class="token punctuation">,</span>
+            <span class="token string single-quoted-string">'product_id'</span> <span class="token operator">=></span> <span class="token class-name static-context">Product</span><span class="token operator">::</span><span class="token constant">MY_PRODUCT_ID</span><span class="token punctuation">,</span>
+            <span class="token string single-quoted-string">'amount'</span> <span class="token operator">=></span> <span class="token number">10</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>That was all fairly easy to implement and after mocking, refactoring, and abstracting I ended up with roughly the following code.</p>
+<pre class="language-php"><code class="language-php"><span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">charge</span><span class="token punctuation">(</span><span class="token class-name type-declaration">PaymentAdapter</span> <span class="token variable">$paymentAdapter</span><span class="token punctuation">,</span> <span class="token class-name type-declaration">OrderQueryObject</span> <span class="token variable">$orderQueryObject</span><span class="token punctuation">,</span> <span class="token class-name type-declaration">Mailer</span> <span class="token variable">$mailer</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$token</span> <span class="token operator">=</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'stripeToken'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$productId</span> <span class="token operator">=</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'productId'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$customer</span> <span class="token operator">=</span> <span class="token class-name static-context">Customer</span><span class="token operator">::</span><span class="token function">fromRequest</span><span class="token punctuation">(</span><span class="token variable">$request</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$charge</span> <span class="token operator">=</span> <span class="token variable">$paymentAdapter</span><span class="token operator">-></span><span class="token function">charge</span><span class="token punctuation">(</span><span class="token variable">$token</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token punctuation">,</span> <span class="token variable">$productId</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$orderQueryObject</span><span class="token operator">-></span><span class="token function">add</span><span class="token punctuation">(</span><span class="token variable">$customer</span><span class="token punctuation">,</span> <span class="token variable">$charge</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$mailer</span><span class="token operator">-></span><span class="token function">sendOrderConfirmation</span><span class="token punctuation">(</span><span class="token variable">$charge</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token function">redirect</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"/charge-success"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>It was all fairly simple but then I started to think about the potential failure cases for the charge.  I expected that for an initial implementation that a general try/catch block that caught <code>\Exception</code> would suffice since it would catch everything.  So I wrote a test to assert that the user would be redirected back and a flash message would be shown.</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">/**
+* @test
+*/</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">it_handles_random_exception</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">Logger</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'error'</span><span class="token punctuation">)</span>
+            <span class="token operator">-></span><span class="token function">once</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">Flash</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'error'</span><span class="token punctuation">)</span>
+            <span class="token operator">-></span><span class="token function">once</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">OrderInteractor</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'run'</span><span class="token punctuation">)</span>
+            <span class="token operator">-></span><span class="token function">andThrow</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name class-name-fully-qualified"><span class="token punctuation">\</span>RuntimeException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/charge'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'stripeToken'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'tok_chargeCustomerFail'</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'name'</span> <span class="token operator">=></span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">name</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'email'</span> <span class="token operator">=></span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">email</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">assertSame</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token class-name static-context">Order</span><span class="token operator">::</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">assertSame</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token class-name static-context">LineItem</span><span class="token operator">::</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span><span class="token operator">-></span><span class="token function">assertRedirect</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">assertFlashMessage</span><span class="token punctuation">(</span><span class="token variable">$response</span><span class="token punctuation">,</span> <span class="token string double-quoted-string">"The attempt to charge your card failed.  Please try another payment method."</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'danger'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>I then added a simple try/catch statement around the code to redirect back on catching an exception.</p>
+<pre class="language-php"><code class="language-php"><span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">charge</span><span class="token punctuation">(</span><span class="token class-name type-declaration">PaymentAdapter</span> <span class="token variable">$paymentAdapter</span><span class="token punctuation">,</span> <span class="token class-name type-declaration">OrderQueryObject</span> <span class="token variable">$orderQueryObject</span><span class="token punctuation">,</span> <span class="token class-name type-declaration">Mailer</span> <span class="token variable">$mailer</span><span class="token punctuation">,</span> <span class="token class-name type-declaration">Logger</span> <span class="token variable">$logger</span><span class="token punctuation">,</span> <span class="token class-name type-declaration">Flash</span> <span class="token variable">$flash</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token variable">$token</span> <span class="token operator">=</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'stripeToken'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token variable">$productId</span> <span class="token operator">=</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'productId'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token variable">$customer</span> <span class="token operator">=</span> <span class="token class-name static-context">Customer</span><span class="token operator">::</span><span class="token function">fromRequest</span><span class="token punctuation">(</span><span class="token variable">$request</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token variable">$charge</span> <span class="token operator">=</span> <span class="token variable">$paymentAdapter</span><span class="token operator">-></span><span class="token function">charge</span><span class="token punctuation">(</span><span class="token variable">$token</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token punctuation">,</span> <span class="token variable">$productId</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token variable">$orderQueryObject</span><span class="token operator">-></span><span class="token function">add</span><span class="token punctuation">(</span><span class="token variable">$customer</span><span class="token punctuation">,</span> <span class="token variable">$charge</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token variable">$mailer</span><span class="token operator">-></span><span class="token function">sendOrderConfirmation</span><span class="token punctuation">(</span><span class="token variable">$charge</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">return</span> <span class="token function">redirect</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"/charge-success"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">{</span><span class="token class-name class-name-fully-qualified type-declaration"><span class="token punctuation">\</span>Exception</span> <span class="token variable">$exception</span><span class="token punctuation">}</span> <span class="token punctuation">{</span>
+        <span class="token variable">$logger</span><span class="token operator">-></span><span class="token function">error</span><span class="token punctuation">(</span>
+            <span class="token function">sprintf</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'Exception during charge: %s - %s - %s'</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token operator">-></span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">??</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token operator">-></span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">??</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">,</span> <span class="token variable">$exception</span><span class="token operator">-></span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token punctuation">[</span>
+                <span class="token string single-quoted-string">'exception_type'</span> <span class="token operator">=></span> <span class="token function">get_class</span><span class="token punctuation">(</span><span class="token variable">$exception</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token punctuation">]</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token variable">$flash</span><span class="token operator">-></span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'The attempt to charge your card failed.  Please try another payment method.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token function">redirect</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>There's nothing wrong with the above code is there (sarcasm)?  It worked for a few weeks but then I noticed that sometimes other errors were happening besides just a general charge failure.</p>
+<p>So the next logical step was to add another catch block.  I didn't know what exceptions the payment provider threw, nor did I want to rely on their exceptions.  I therefore decided to catch and convert the exceptions into my own so that I owned the interface.  That brought about a <code>PaymentRequestException</code> which converted the payment provider's charge exception.</p>
+<p>I added a test around the payment adapter to assert that we would catch the charge exception and throw the payment request exception.  I then moved up to the controller level and added a test to drive out the desired behavior.</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">/**
+* @test
+*/</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">it_redirects_back_with_an_error_if_a_charge_fails</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$message</span> <span class="token operator">=</span> <span class="token string single-quoted-string">'foo'</span><span class="token punctuation">;</span>
+    <span class="token variable">$additionalInformation</span> <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'test'</span> <span class="token operator">=></span> <span class="token constant boolean">true</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">Logger</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'error'</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">once</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">Flash</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'error'</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">once</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">OrderInteractor</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token keyword">use</span> <span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token variable">$additionalInformation</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'run'</span><span class="token punctuation">)</span>
+            <span class="token operator">-></span><span class="token function">andThrow</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">PaymentException</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token variable">$additionalInformation</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/charge'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'stripeToken'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'tok_chargeCustomerFail'</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'name'</span> <span class="token operator">=></span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">name</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'email'</span> <span class="token operator">=></span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">email</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">assertSame</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token class-name static-context">Order</span><span class="token operator">::</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">assertSame</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token class-name static-context">LineItem</span><span class="token operator">::</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span><span class="token operator">-></span><span class="token function">assertRedirect</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">assertFlashMessageLevel</span><span class="token punctuation">(</span><span class="token variable">$response</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'danger'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>And then I simply added the following catch block to get back to green.</p>
+<pre class="language-php"><code class="language-php"><span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name type-declaration">PaymentException</span> <span class="token variable">$exception</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token variable">$logger</span><span class="token operator">-></span><span class="token function">error</span><span class="token punctuation">(</span>
+        <span class="token function">sprintf</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'Charge Failure: %s - %s - %s'</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token operator">-></span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">??</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token operator">-></span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">??</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">,</span> <span class="token variable">$exception</span><span class="token operator">-></span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token variable">$exception</span><span class="token operator">-></span><span class="token function">getAdditionalInformation</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$flash</span><span class="token operator">-></span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'The attempt to charge your card failed.  Please try another payment method.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token function">redirect</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>This likewise worked well for awhile.  Until, that is, I noticed some people were getting double charged.  It turned out that they were submitting the purchase form twice since I hadn't disabled doing so on the frontend.  Yeah, I know: rookie mistake.</p>
+<p>So this prompted another test and a new exception type: <code>DuplicatePaymentException</code>.</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">/**
+    * @test
+    */</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">it_handles_a_duplicate_charge</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$name</span> <span class="token operator">=</span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">name</span><span class="token punctuation">;</span>
+    <span class="token variable">$email</span> <span class="token operator">=</span> <span class="token class-name static-context">Factory</span><span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">email</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">Logger</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'error'</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">once</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">Flash</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'error'</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">once</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token class-name static-context">OrderInteractor</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$mock</span><span class="token punctuation">)</span> <span class="token keyword">use</span> <span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token variable">$additionalInformation</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$mock</span><span class="token operator">-></span><span class="token function">shouldReceive</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'run'</span><span class="token punctuation">)</span>
+            <span class="token operator">-></span><span class="token function">andThrow</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">DuplicatePaymentException</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token variable">$additionalInformation</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/charge'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'stripeToken'</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'tok_chargeCustomerFail'</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'name'</span> <span class="token operator">=></span> <span class="token variable">$name</span><span class="token punctuation">,</span>
+        <span class="token string single-quoted-string">'email'</span> <span class="token operator">=></span> <span class="token variable">$email</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$response</span><span class="token operator">-></span><span class="token function">assertRedirect</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/duplicate-purchase'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>I then, of course, added a new catch block.</p>
+<pre class="language-php"><code class="language-php"><span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name type-declaration">DuplicatePaymentException</span> <span class="token variable">$exception</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token variable">$logger</span><span class="token operator">-></span><span class="token function">error</span><span class="token punctuation">(</span>
+        <span class="token function">sprintf</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'Duplicate payment attempt: %s - %s - %s'</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token operator">-></span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">??</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">,</span> <span class="token variable">$customer</span><span class="token operator">-></span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">??</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">,</span> <span class="token variable">$exception</span><span class="token operator">-></span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token variable">$exception</span><span class="token operator">-></span><span class="token function">getAdditionalInformation</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token function">redirect</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"/duplicate-purchase"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>At this point, this was starting to feel cumbersome.  The feedback from these tests is an HTTP response so if there's something wrong, you have to parse through that response to look for an exception.  That is less than ideal and the feedback loop is longer than desired.</p>
+<p>In addition, we were starting to see some repetition and lengthiness with the implementation code. Along with this, the tests were getting quite cluttered since there were additional tests to validate the request as well.  While testing exception handling isn't horrible at the application layer, testing validation logic certifiably is.  These tests are coarse grained.  You feel like you're having to work at arm's length with everything.</p>
+<p>This is a perfect situation to apply the refactoring extract method to class.  Now, wait a second!  Did I just recommend extracting a <em>controller</em> method to a class?  Yes, indeed I did.  Right now, you might have a few thoughs:</p>
+<ul>
+<li>How would that even work?  This is a controller and how are you going to test responses?</li>
+<li>....</li>
+</ul>
+<p>Validation logic is, largely, a business domain concern so it should live in the business domain.</p>
+<p>Only wrap and use this sort of thing sometimes</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2020 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

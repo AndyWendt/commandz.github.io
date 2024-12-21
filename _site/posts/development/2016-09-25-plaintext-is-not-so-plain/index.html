@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plaintext Is Not So Plain - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            Plaintext Is Not So Plain
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2016-09-25T00:00:00.000Z">25 Sep 2016</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">plaintext</span>
+                
+                <span class="tag">encodings</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>One of the bane's of my current existence is having to deal with text encodings. I have a good friend that uses a few antique Windows programs that puke out <code>Windows-1252</code> encoded characters as though it were going out of style.  Much to my suprise when I opened up a csv file, made a few changes, and saved it, I ended up with a bunch of unicode replacement characters: &quot;�&quot; or otherwise known as <code>\U+FFFD</code>.</p>
+<p>I thought I needed a brain replacement instead of a replacement character.  I proceeded to guess that the CSV I was working with was encoded in <code>Windows-1252</code> (aka <code>CP1252</code>).  I then needed an easy way to convert those characters in a csv to <code>UTF-8</code> using PHP if at all possible since the content would be used on the web.</p>
+<p>I tried a couple of different ways to do it.  Problem was I opened up the file in LibreOffice first and then saved it, which replaces the unknown characters with the unicode replacement character.  Therefore they could not be converted when I used the different conversion methods.  After playing ring-around-the-rosy for awhile, I figured the whole mess out but not after much wailing and gnashing of teeth.</p>
+<p>This <a href="http://www.i18nqa.com/debug/table-iso8859-1-vs-windows-1252.html">page</a> helped me to decipher the differences between <code>ISO-8859-1</code>, <code>ISO-8859-15</code>, and <code>Windows-1252</code>.  Which led down the rabbit trail of needed to replace a few characters to end up at <code>UTF-8</code>.</p>
+<p>Whell it turns out that <a href="http://stackoverflow.com/questions/22683132/php-cp1252-windows-1252-conversion-to-utf-8">replacement is not best solution perhaps</a>.  It turns out that you should convert from <code>Windows-1242</code> straight to <code>UTF-8</code> whether you are converting to <code>ISO-8859-1</code> or <code>Windows-1252</code> (see this <a href="http://stackoverflow.com/questions/22683132/php-cp1252-windows-1252-conversion-to-utf-8">post</a>).</p>
+<p>The below is the solution that I ended up using to convert <code>Window-1252</code> to <code>UTF-8</code>.  It could be prettier but it did the job and it was code I didn't have to write thanks to <a href="http://stackoverflow.com/questions/22683132/php-cp1252-windows-1252-conversion-to-utf-8">this post</a> on StackOverflow.</p>
+<pre class="language-php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+
+<span class="token keyword">function</span> <span class="token function-definition function">convert_cp1252_to_utf8</span><span class="token punctuation">(</span><span class="token variable">$input</span><span class="token punctuation">,</span> <span class="token variable">$default</span> <span class="token operator">=</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">,</span> <span class="token variable">$replace</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$input</span> <span class="token operator">===</span> <span class="token keyword type-declaration">null</span> <span class="token operator">||</span> <span class="token variable">$input</span> <span class="token operator">==</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token variable">$default</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token variable">$encoding</span> <span class="token operator">=</span> <span class="token function">mb_detect_encoding</span><span class="token punctuation">(</span><span class="token variable">$input</span><span class="token punctuation">,</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'Windows-1252'</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'ISO-8859-1'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token constant boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$encoding</span> <span class="token operator">==</span> <span class="token string single-quoted-string">'ISO-8859-1'</span> <span class="token operator">||</span> <span class="token variable">$encoding</span> <span class="token operator">==</span> <span class="token string single-quoted-string">'Windows-1252'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">/*
+         * Because ISO-8859-1 and CP1252 are identical except for 0x80 through 0x9F
+         * and control characters, always convert from Windows-1252 to UTF-8.
+         */</span>
+        <span class="token variable">$input</span> <span class="token operator">=</span> <span class="token function">iconv</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'Windows-1252'</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'UTF-8//IGNORE'</span><span class="token punctuation">,</span> <span class="token variable">$input</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token variable">$replace</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token variable">$input</span> <span class="token operator">=</span> <span class="token function">html_entity_decode</span><span class="token punctuation">(</span><span class="token variable">$input</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token variable">$input</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</span></code></pre>
+<p>Here are a few handy links for reading up on encoding types:</p>
+<ul>
+<li><a href="http://www.joelonsoftware.com/articles/Unicode.html">Joel Spoelsky's Primer on Unicode and Encodings</a></li>
+<li><a href="https://en.wikipedia.org/wiki/UTF-8">https://en.wikipedia.org/wiki/UTF-8</a></li>
+<li><a href="https://en.wikipedia.org/wiki/ISO/IEC_8859-1">https://en.wikipedia.org/wiki/ISO/IEC_8859-1</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Windows-1252">https://en.wikipedia.org/wiki/Windows-1252</a></li>
+<li><a href="http://www.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP1252.TXT">http://www.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP1252.TXT</a></li>
+<li><a href="https://en.wikipedia.org/wiki/ISO/IEC_8859-15">https://en.wikipedia.org/wiki/ISO/IEC_8859-15</a></li>
+</ul>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2016 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

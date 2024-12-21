@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP/2, Network Hacks, and REST API Design - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            HTTP/2, Network Hacks, and REST API Design
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2019-04-10T00:09:09.000Z">10 Apr 2019</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">api</span>
+                
+                <span class="tag">http2</span>
+                
+                <span class="tag">rest</span>
+                
+                <span class="tag">hateos</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>Not everyone knows about it, but HTTP/2 brings some awesome sauce to the API scene (REST in particular in this case).  It used to be with HTTP/1 that you wanted to reduce the number of requests made by the frontend and increase the size of the payloads because of network related performance costs.</p>
+<p>However, because of HTTP/2's performance enhancements through multiplexing, header compression and reuse, and <a href="https://laravel-news.com/http2-server-push-middleware">server push</a>, it is now extremely performant if not more performant to make multiple requests than a single large request.  Indeed, combining the goodness of <a href="https://medium.freecodecamp.org/how-to-master-async-await-with-this-real-world-example-19107e7558ad">async &amp; await</a> with a bit of <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all"><code>Promise.all([])</code></a> special sauce leads to a very workable solution for the frontend with few if any downsides.  Through the generalization of endpoints, the frontend can reuse code that utilizes the endpoints which leads to a more modular and flexible design.</p>
+<p>One of the main disadvantages with the HTTP/1, &quot;network hack&quot;, approach was a bunch of one-off endpoints that were very specific to a particular application.  The HTTP/2 benefits to API design are immense since it allows endpoints to be decoupled from a particular application through a generalization of the endpoints thereby allowing full advantage to be taken of <a href="https://restfulapi.net/hateoas/">REST’s HATEOS resource linking</a>, and thus attaining the holy grail of the <a href="https://restfulapi.net/richardson-maturity-model/">Richardson maturity model</a>.</p>
+<p>In object-oriented design, the larger and more specific to a particular use case you make your objects the less reusable, the less cohesive, and the more tightly coupled they tend to be.  The same is true for REST Endpoint design.  Decoupling your application by writing endpoints that &quot;do one thing and do it well&quot; leads to a flexible architecture (similar to how smaller methods lead to better code) that is easier to test, extend, and maintain.</p>
+<p>Endpoint specialization for a particular use case is the antithesis of endpoint reusability.  These large endpoints are akin to &quot;God Objects&quot; that know and do too much and therefore they must be humbled a bit through a reacquainting with the harsh realities of modern APIs.</p>
+<p>I could keep babbling on, but Phil Sturgeon also has a few <a href="https://blog.apisyouwonthate.com/lets-stop-building-apis-around-a-network-hack-9a68f7e83dd2">sound words to say on the matter</a>:</p>
+<blockquote>
+<p>Includes, partials, etc., can all graduate to being actual brand new requests, instead of being some weird network hack because we were scared of handshake time.</p>
+</blockquote>
+<p>Hear, hear!</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2019 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

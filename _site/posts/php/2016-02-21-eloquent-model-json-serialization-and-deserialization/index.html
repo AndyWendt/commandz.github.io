@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eloquent Model JSON Serialization and Deserialization - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            Eloquent Model JSON Serialization and Deserialization
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2016-02-21T00:00:00.000Z">21 Feb 2016</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">laravel</span>
+                
+                <span class="tag">php</span>
+                
+                <span class="tag">eloquent</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>Awhile back I needed to save an Eloquent model to the DB so that I might compute a<br>
+<a href="https://en.wikipedia.org/wiki/Difference_quotient">delta</a> later on.  Json serves this purpose nicely since the json data<br>
+type is now natively <a href="https://dev.mysql.com/doc/refman/5.7/en/json.html">supported in many languages</a>.</p>
+<p>One could do this manually but, fortunately, Laravel makes this easy on us.  We can utilize<br>
+<a href="https://laravel.com/docs/5.1/eloquent-mutators#accessors-and-mutators">model mutators</a> to dynamically convert the input<br>
+and output of a specific database column.</p>
+<p>For example, say we want to save a passed in model as json and that the column that we want to save to is called <code>json</code>:</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">/**
+ * @param YourModel $model
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">setJsonAttribute</span><span class="token punctuation">(</span><span class="token class-name type-declaration">YourModel</span> <span class="token variable">$model</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">// Eloquent Models implement ArrayIterator so that allows us to access the attributes as an array.</span>
+    <span class="token comment">// When using a mutator, you cannot use $this->json since that is part of the functionality that we are</span>
+    <span class="token comment">// defining here.</span>
+    <span class="token variable">$this</span><span class="token operator">-></span><span class="token property">attributes</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'json'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$model</span><span class="token operator">-></span><span class="token function">toJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>This allows us to set the attribute like so:</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">// This will convert the $modelToSave to json and then save that json to the database</span>
+<span class="token variable">$model</span><span class="token operator">-></span><span class="token property">json</span> <span class="token operator">=</span> <span class="token variable">$modelToSave</span><span class="token punctuation">;</span>
+</code></pre>
+<p>That way the model will automatically be saved to json in the database.  The retrieval is a little bit trickier:</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">/**
+ * @return YourModel
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">getJsonAttribute</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">/** @var YourModel $model */</span>
+    <span class="token variable">$model</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">YourModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// retrieve the model serialized as json</span>
+    <span class="token variable">$jsonToConvert</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token property">attributes</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'json'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// This converts the json to an array</span>
+    <span class="token variable">$modelArray</span> <span class="token operator">=</span> <span class="token variable">$model</span><span class="token operator">-></span><span class="token function">fromJson</span><span class="token punctuation">(</span><span class="token variable">$jsonToConvert</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// We now create a new instance of YourModel from that array</span>
+    <span class="token keyword">return</span> <span class="token variable">$model</span><span class="token operator">-></span><span class="token function">newInstance</span><span class="token punctuation">(</span><span class="token variable">$modelArray</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Now anytime that we call <code>$model-&gt;json</code> we will get an instance of <code>YourModel</code>.  This is quite convenient and allows us<br>
+to simplify our code.</p>
+<p>You will notice that I am using several Eloquent methods that are not commonly used.  I recommend taking a look<br>
+through the <a href="https://laravel.com/api/5.1/Illuminate/Database/Eloquent/Model.html">Eloquent model documentation</a> since<br>
+it shows you quite a few methods that might come in handy later.</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2016 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

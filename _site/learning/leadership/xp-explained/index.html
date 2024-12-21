@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extreme Programming Explained - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1 class="title">Extreme Programming Explained</h1>
+        
+        <div class="metadata">
+            <div class="primary-meta">
+                
+                <time datetime="2017-03-01T00:00:00.000Z">01 Mar 2017</time>
+                
+
+                
+
+                
+            </div>
+
+            
+            <div class="tags-container">
+                
+                <span class="tag">learning</span>
+                
+            </div>
+            
+        </div>
+
+        
+
+        
+    </header>
+
+    <div class="content-body">
+        <h1>1 - What is XP</h1>
+<p>XP attempts to handle several of the sociological issues in software development.  It does this by emphasizing relationships as much as the technical.  It asks you to accept vulnerability through preparing for success and accepting responsibility for the consequences.  You thereby leave yourself exposed but you have the knowledge that you did your best and you can thus feel good about yourself.  It emphasizes a mentality of sufficiency: &quot;How would you do it if you had enough time?&quot;.</p>
+<p>XP is a philosophy, a body of practices, a set of complimentary principles, and a community.</p>
+<p>It's characteristics include: short development cycles, incremental planning, flexible scheduling, automated testing, preference for oral communication, evolutionary design, close collaboration, and practices that work with the long-term and short-term interests of the project.</p>
+<p>XP is lightweight, a methodology that isn't rigid but flexible, works with teams of varying sizes, and seeks to adapt to uncertainty and change.  It seeks to reconcile humanity and productivity: the more humanely I treat myself and others the more productive we'll become.</p>
+<p>Deadlines need not be a terror since it's not our job to manage someone else's expectations.</p>
+<p>How XP addresses risk in the SDLC:</p>
+<ul>
+<li>Schedule slips: short release cycles decrease the amount of possible slippage and provide a fast feedback loop.</li>
+<li>Project cancelled is handled by the MVP philosophy.</li>
+<li>System goes sour is handled by an extensive suite of tests</li>
+<li>Defect rate is decreased through feature and spec level tests</li>
+<li>Business misunderstood: business people are first class members of the team.</li>
+<li>Business changes are handled by shortening the release cycle and thus decreasing the impact of each change</li>
+<li>False feature rich is handled though prioritization of tasks.</li>
+<li>Staff turnover is handled by having developers accept responsibility for estimating, producing, etc of their work which gives them control over their destiny.  New team members are gradually asked to accept more responsibility.</li>
+</ul>
+<p>XP is:</p>
+<ul>
+<li>letting go of the familiar for the effective</li>
+<li>evaulating yourself based on effort and contribution to team goals</li>
+<li>continuous improvement</li>
+<li>meeting sociological needs while developing software.</li>
+</ul>
+<h1>2 - Learning to Drive</h1>
+<p>The paradigm for XP is: &quot;Stay aware, adapt, and change.&quot;  It means maintaining situational awareness and correcting your actions based on the feedback from the awareness.  Everything in software changes.  Therefore most problems stem from our inability to cope with change and uncertainty.</p>
+<p>In XP, the whole team drives the development process and, likewise, the customer drives the content.</p>
+<h1>3 - Values, Principles, and Practices</h1>
+<h2>Practices</h2>
+<p>Are clear and objective things that you do everyday.  They are a good place to start when working to develop values and principles.</p>
+<h2>Values</h2>
+<p>Values are the roots of things that we like and don't like in a given situation.  They are the large-scale criteria we use to judge what we see, think, and do.  Without values, practices become rote.  Bringing values together with practices means that we can perform a practice at effective times and for good reasons.</p>
+<p>Values bring purpose to practices.  Practices are the evidence of values. Practices are clear.  What you really value is fuzzy.</p>
+<blockquote>
+<p>Values bring purpose to practices, practices bring accountability to values.</p>
+</blockquote>
+<p>Values and practices are an ocean apart.  Values are universal while practices are intensely situated.</p>
+<h2>Principles</h2>
+<p>Principles bridge the gap between values and practices.  They are domain-specific guidelines for life.</p>
+<h1>4 - Values</h1>
+<p>The difference between what we believe to be valuable and what is valuable is waste.</p>
+<blockquote>
+<p>It ain't what you don't know that gets you in trouble.  It's what you know that ain't so.<br>
+--Will Rogers</p>
+</blockquote>
+<p>The biggest problem with people who &quot;just know&quot; is that they are focused on individual action.  What actually matters is how individuals behave as part of a team and as part of an organization.  The most important &quot;style&quot; issue is that the team chooses to work toward a common style.  Individual freedom at all costs, doesn't help the team succeed.</p>
+<h2>Communication</h2>
+<p>Communication is what matters most on software development teams.  Sometimes problems are a result of a lack of knowledge rather than a lack of communication.  Regardless, when surprises present themselves then communication can help to solve the problem.</p>
+<p>Motion without communication is not progress.</p>
+<p>When you encounter a problem, ask yourselves if the problem was caused by a lack of commumnication.</p>
+<h2>Simplicity</h2>
+<p>Simplicity is the most intensely intellectual of the XP values.  Ask the question: &quot;what is the simplest thing that could probably work?&quot;</p>
+<p>Bias your thinking toward eliminating wasted complexity but that also means that the solution need not be too simple to work.  Simplicity only makes sense in context.  Achieving simplicity gives you that much less to communicate about.</p>
+<h2>Feedback</h2>
+<p>Planning and direction made in advance of experience have a short half-life.   Change is inevitable and creates the need for constant feedback.</p>
+<p>It would be better to do it the &quot;right way&quot; the first time except that:</p>
+<ul>
+<li>We may not know how to do it &quot;right&quot;</li>
+<li>What's right today might be wrong tomorrow</li>
+<li>Doing everything &quot;right&quot; might take so long that it becomes unnecessary before its even used.</li>
+</ul>
+<p>Be satisfied with improvement rather than instant perfection.  Use feedback to continually get closer to the goals.</p>
+<p>Feedback forms:</p>
+<ul>
+<li>Opinions</li>
+<li>How easily the code reads</li>
+<li>How easy the tests are to write</li>
+<li>Do the tests pass?</li>
+<li>How it works once deployed</li>
+</ul>
+<p>Generate as much feedback as the team can handle but slow things down (such as deploys) if it becomes too much.  A heuristic for this is if the team is ignoring important feedback.</p>
+<p>Feedback is a crititcal part of communication that aids with simplicity.  The simpler the system, the easier it is to get feedback about it.</p>
+<h2>Courage</h2>
+<blockquote>
+<p>Courage is effective action in the face of fear.</p>
+</blockquote>
+<p>Can be manifested as a bias to action or patience.  Courage is dangerous without counterbalancing values.  When it is coupled with other values, it is powerful.</p>
+<blockquote>
+<p>The courage to speak truths, pleasant or unpleasant, fosters communication and trust.</p>
+</blockquote>
+<h2>Respect</h2>
+<p>Every person whose life is touched by software development has equal value as a human being.  No one is intrinsically worth more than anyone else.  The contributions of everyone on the team need to be respected. &quot;I am important and so are you&quot;.</p>
+<h2>Others</h2>
+<p>These aren't all of the values for software development.  These are just the ones that are important to XP.  Other important values include: safety, security, predictability, and quality-of-life.  What is most important is aligning team behavior to team values.</p>
+<h1>5 - Principles</h1>
+<h2>Humanity</h2>
+<p>Acting like software isn't written by humans extracts a large toll on teams.  People need the following to be a good developer: Basic Safety, Accomlishment, Belonging, growth, and intimacy.  These don't all need to be met in the work environment.  Balance the needs of the individual with the needs of the team.  Teams will find that they can be more themselves after developing trust.</p>
+<h2>Economics</h2>
+<p>What we work on as developers must meet business goals, has business value, and servers business needs.  There's a couple of measures of that: time value of money and option value of systems and teams.  Incremental design defers design investment (time value of money) while keeping options open and flexible (option value of systems and teams) while not delving into speculative flexibility.</p>
+<h2>Mutual Benefit</h2>
+<p>Every activity should benefit all concerned.  Unbalanced agreements tear down relationships that we need to value.  We're in a people business and maintaining working relationships is important.  Extensive internal documentation is an example of a violation.  You need to solve more problems than you create.</p>
+<h2>Self-similarity</h2>
+<p>Try copying the structure of one solution into a new context, even at different scales.  The basic rhythm of software development is that you write a test that fails and then you make it work.  The rhythm works at all different scales: quarter, week, hours, etc.  Writing system tests before unit is beneficial.  Just because a solution is unique doesn't mean that it is bad or wrong.</p>
+<h2>Improvement</h2>
+<blockquote>
+<p>Best is the enemy of good enough.  Do the best you can today but strive to do better tomorrow.  Improve tech has lead to greater efficiencies but increased rigidity in organizations has lead to waste.</p>
+</blockquote>
+<h2>Diversity</h2>
+<p>You need many perspectives to proactively and effectively solve a problem.  Opinions should be valued.</p>
+<h2>Reflection</h2>
+<p>Good teams think about what and why they are doing things.  Reflection isn't purely intellectual since it can come from the gut as well. It can be taken too far.</p>
+<h2>Flow</h2>
+<p>The practices of XP are biased towards a continuous flow of activities rather than discrete phases.  Less feedback makes the problem worse leading to a tendency for even bigger chunks.  Deploy smaller increments of value ever more frequently.</p>
+<h2>Opportunity</h2>
+<p>Survival leads to just enough problem solving to get by.  Problems need to turn into opportunities for learning and improvement and not just survival.</p>
+<h2>Redundancy</h2>
+<p>Two is one and one is none. Try not to remove redundancy that serves a valid purpose.</p>
+<h2>Failure</h2>
+<p>If you're having trouble succeeding, fail.  Failure is not wasteful if it imparts knowledge.  One tact is to limit design discussions to fifteen minutes and then go implement and fail to see how things work in practice.  When you don't know what to do , risking failure can be the shortest road to success.</p>
+<h2>Quality</h2>
+<p>Projects don't go faster by accepting lower quality and vice versa.  You can't control projects by controlling quality.  Time and cost are often fixed.  XP chooses to use scope as the primary means of planning, tracking, and steering projects.</p>
+<p>If you know a clean way but it would take too long, do the job as well as you have time for now.  Resolve to finish doing it the clean way later.  Architectural evolution.</p>
+<h2>Baby steps</h2>
+<p>Momentous change taken all at once is dangerous and unsettling to people.  People and teamns can take small steps so rapidly that they appear to be sprinting.</p>
+<h2>Accepted responsibility</h2>
+<p>Authority and responsibility go hand in hand and must be accepted by the person.</p>
+<h1>6 - Practices</h1>
+<p>Practices are not meaningful without attendant values to drive them.  Practices are situation dependent and are a choice as to when to implement them.  Experiment with the primary practices and add new ones to see which ones work and which ones don't.</p>
+<h1>7 - Primary Practices</h1>
+<h2>Sit Together</h2>
+<p>Develop in an open space big enough for the whole team.  Increase the level of interactions.  No matter what people say is the problem, the problem is always a people (sociological) problem.</p>
+<p>Teams can be distributed and do XP but more facetime is always better.</p>
+<h2>Whole Team</h2>
+<p>People need a sense of &quot;team&quot; meaning that:</p>
+<ul>
+<li>we belong</li>
+<li>we're in this together</li>
+<li>we support each others' work, growth, and learning</li>
+</ul>
+<p>The tipping points for the number of people who can comfortably interact and trust each other in a group is 12 and 150.  Fractional people are less effective.</p>
+<h2>Informative Workspace</h2>
+<p>Make your workspace about your work: important and active information.  Also needs to provide for other human needs.</p>
+<h2>Energized Work</h2>
+<p>Burning yourself out is unproductive in the long term and can be counter-productive in the short-term.  Work only as many hours as you can be productive and only as many hours as you can sustain.</p>
+<p>Turning to long work hours is a means of grabbing control.  When sick, rest up and get well.</p>
+<p>Stay at work the same amount of time but manage that time better.</p>
+<h2>Pair Programming</h2>
+<p>Write all production programs with two people.  Pair programming includes keeping each other on task, brainstorming refinements, clarifying ideas, taking initiative when their partner is stuck, and holding each other accountable.</p>
+<p>Doesn't mean that you can't think alone.  Pairing means both companionship and privacy.  You can prototype alone and still pair but bring the resulting idea and not the code.</p>
+<p>It is tiring.  Rotate pairs frequently.  Respect personal space and personal differences.  If unfortable pairing with someone, talk about it with someone safe.</p>
+<h2>Stories</h2>
+<p>Are units of customer-visible functionality.  Estimate the development effort early which gets eveyone thinking about how to get the greatest return from the smallest investment.  Requirements aren't always true requirements.</p>
+<h2>Weekly Cycle</h2>
+<p>A weekly meeting at the start of the week to review progress, have the customer select stories to complete, and break the stories into tasks.</p>
+<p>Start the week by running automated unit tests and spend the rest of the week completing the stories.</p>
+<p>If things aren't being completed, work on improving estimates and or interruptions.  Planning is a form of necessary waste that should get better over time.</p>
+<p>Individuals should take time for estimates and completion.  Ownership of tasks goes a long way to satisfying the human need for ownership.</p>
+<h2>Quarterly Cycle</h2>
+<p>Use quarterly planning to:</p>
+<ul>
+<li>Identify bottlenecks</li>
+<li>start repairs</li>
+<li>Plan the themes for the quarter (collections of stories)</li>
+<li>Pick a quarter's worth of stories to fulfill those themes</li>
+<li>Focus on the big picture</li>
+</ul>
+<p>Separation of themes from stories.</p>
+<h2>Slack</h2>
+<p>Habitual overcommitment causes a number of issues including increasing defefct loads, bad morale, bad relationships.  Consider using 20% time to improve and develop skills.</p>
+<h2>Ten-minute Build</h2>
+<h2>Continuous Integration</h2>
+<p>Integrate every couple of hours or after each pair programming episode.</p>
+<h2>Test-First Programming</h2>
+<p>Testing helps with scope creep by stating explicitly what the program is supposed to do.  It also helps with coupling.  And last, it helps with trust and rhythm (easier to know what to do next).  Consider continuous testing.</p>
+<h2>Incremental Design</h2>
+<p>Big design upfront came from Barry Boehm study in 1960s of defense contractors.</p>
+<p>XP strives to keep the cost of changing software from rising catastrophically.  Without daily attention to design, the cost of changes skyrockets.</p>
+<p>Keep design investment in proportion to the needs of the system thus far.  The question is when to design and the most effective time is when experience has been gained.  Where is most often answered by eliminating duplication.</p>
+<h1>8 - Getting Started</h1>
+<p>There is no one right place for people to start.  Start by changing one thing at a time.  Change doesn't have to be slow but new habits do take time to solidify.  Change begins with awareness but metrics can lead to awareness.   The primary practices are on a continuum of behaviour.  Change always starts at home.</p>
+<p>Dictating practices destroys trust and creates resentment.  Encourage responsibility and accountability instead.  Raise your expectations for those to elicit change.  Help your team through the anxiety that comes with change.</p>
+<h2>Mapping Practices Exercise</h2>
+<p>No right answers.  Discussion should be centered around what is attached to the practice is one valuable side effect of the exercise.  Once you have potential changes to make, make some of them.</p>
+<h1>9 - Corollary Practices</h1>
+<h2>Real Customer Involvement</h2>
+<p>Visionary customers can be part of the development process.  Integrating them will give you a leg up over the competition by reducing wasted effort because of increased communication.</p>
+<p>A customer proxy, or no customer at all, leads to waste, a reduction in diverse perspectives, and lost relationships that are crucial to crafting software.</p>
+<p>It's ok if the system is specialized at first.  It's easier to generalize a successful system than it is to try to market a product that doesn't solve anyone's problems.</p>
+<p>Letting the customer see the sausage making rarely has substantial downsides since software reflects the organization that builds it.  They already know how you develop for the most part.</p>
+<h2>Incremental Deployment</h2>
+<p>Every once in awhile a big deployment works. Big deployments have a high risk and high human and economic costs.  Find a little piece of functionality or a limited data set you can handle right away.  Deploy it.  You'll have to find a way to run both programs in parallel.</p>
+<h2>Team Continuity</h2>
+<p>In general, keep effective teams together (doesn't mean that they're static).  Splitting teams up to maximize micro-efficiency is being penny-wise and pound foolish and ignores the value of relationships.</p>
+<h2>Shrinking Teams</h2>
+<p>As a team's capabilities improve, keep its workload constant but gradually reduce its size. Trying to keep everyone looking busy obscures the fact that the team has extra resources available.</p>
+<h2>Root-Cause Analysis</h2>
+<p>Goal is that the team will never make the same <em>kind</em> of mistake again.</p>
+<p>The process to respond to a defect:</p>
+<ol>
+<li>Write an automated system-level test</li>
+<li>Write a unit test</li>
+<li>Fix the system (repeat 2 as needed until 1 is green)</li>
+<li>Figure out why the defect was created by asking the five whys</li>
+</ol>
+<p>After the five whys, you fin the people problem lying at the heart of the defect.</p>
+<h2>Shared Code</h2>
+<p>Anyone on the team can improve any part of the system at any time if it is in scope.  If no one is responsible for a pice of code then there is the possibility that everyone will act irresponsibly, until the team develops a sense of collective responsbility.</p>
+<p>Continuous integration is an important prerequisite for collective ownership.</p>
+<h2>Code and Tests</h2>
+<p>Maintain only code and tests as permanent artifacts.  Generate other docs from source code and rely on social mechanisms to keep alive important history.</p>
+<p>Customers pay for what the system does today and what the team can make the system do tomorrow.  Everything else is waste.</p>
+<p>The valuable decisions in software development are:</p>
+<ul>
+<li>What are we going to do?</li>
+<li>What aren't we going to do?</li>
+<li>How are we going to do what we do?</li>
+</ul>
+<h2>Single Code Base</h2>
+<p>Don't let temporary branches live for more than a few hours.  Eliminate variations of the same code base or code that solves the same problem.   Improve your build process and design so that they don't have to be seperate versions of the code.</p>
+<h2>Daily Deployment</h2>
+<p>Deploy new code daily.  Not doing so risks the code becoming out of sink.  Defect rate must be low and automation in place as well as a supporting culture and task creation process.</p>
+<p>As long as you don't change the user's experience of the system, you can deploy the code.  When ready to enable a feature, flip the switch.</p>
+<h1>10 - The Whole XP Team</h1>
+<p>Flow: more value is created in a smooth steady stream of software.  Individuals must work together as a group in order for them to be successful individually.  The team needs to feel that they are connected and that that is what leads to success.</p>
+<p>Change: you can't be convinced against your will.</p>
+<h2>Testers</h2>
+<p>Help choose and write the automated tests for the week with the customers to define what is acceptable functionality.  Responsibility for trivial mistakes is accepted by developers.</p>
+<p>Testers are good at <em>happy paths</em> and asking what should happen if something goes wrong (this responsibility can be accepted by engineers).  They can pair with programmers.</p>
+<h2>Interaction Designers</h2>
+<p>Choose overall metaphors for the system (similar to DDD?), write and clarify stories, evaluate usage, address concerns of eventual users, and refine the UX/UI of a system with customers and the development team.</p>
+<h2>Architects</h2>
+<p>Look for and execute large-scale refactorings, write system-level architectural stress tests, and implement stories.  Responsibility and authority should be aligned but that also means that architects must feel the pain of their own inventions (actually write code).</p>
+<p>Don't write specification documents.  Write tests instead.</p>
+<p>The system should have just the right amount of architecture.  Make big architectural changes in small, safe steps.  To improve architecture, first improve the stress tests until the system breaks.</p>
+<p>Partitioning systems, rather than divide and conquer, conquer and divide.  Find the natural fracture lines and divide the system into relatively independent parts.</p>
+<h2>Project Managers</h2>
+<p>Facilitate and coordinate communication with customers and third parties and within the team.  Act as team progress trackers and package information so that it is palatable by customers and management.</p>
+<p>Planning is an activity and not a phase.  They're responsible for keeping plans synchronized with reality.</p>
+<p>The power gained from being an effective facilitator exceeds that of being a controller of even important information.</p>
+<h2>Product Managers</h2>
+<p>Write and pick themes and stories.  They answer questions and facilitate customer and developer communication as well as prioritization and modification of stories.  Ensures that the most important customer concerns are heard by the team.</p>
+<p>A plan in XP is an example of what could happen, not a prediction of what will happen.</p>
+<h2>Executives</h2>
+<p>Setup a culture of accountability, courage, and confidence.  Articulate and maintain large-scale goals all the while monitoring, encouraging and facilitating improvement.  They need to keep perspective in the face of problems and ask for explanations as needed.</p>
+<p>Metrics are number of defects found after development and time lag between the beginning of investment in an idea and when the idea first generates revenue.</p>
+<h2>Technical Writers</h2>
+<p>Provide early feedback about features and create closer relationships with users through helping them learn about the product and listening to their feedback.  If users aren't using a particular type of documentation, stop writing it.</p>
+<p>The better a team, the later it is willing to make big changes.</p>
+<blockquote>
+<p>The XP philosophy is to start where you are now and move towards the ideal.</p>
+</blockquote>
+<h2>Users</h2>
+<p>Help write and pick stories and make domain decisions during development.  Need to keep in mind that they are speaking for an entire community.</p>
+<h2>Programmers</h2>
+<p>Estimate stories and tasks, break stories up, write tests, write code, automate, gradually improve design, and work in close technical collaboration with others.  Need to develop good social and relationship skills.</p>
+<h2>Human Resources</h2>
+<p>Two challenges: reviews and hiring. Reviews should be focused on team performance with possibly an individual component.  Possibly move to team based incentives and raises.  There's a need for altruistic behavior.</p>
+<p>Hiring needs to focus much more emphasis on teamwork and social skills.  Choose the more social candidate.</p>
+<h2>Roles</h2>
+<p>Roles on a mature XP team aren't fixed and rigid.  Keep in mind authority and responsibility.  Everyone on the team can recommend changes, but they should be prepared to back up their concerns with action.</p>
+<h1>11 - The Theory of Constraints</h1>
+<p>XP is designed to solve software development problems and not marketing, sales, or management problems.</p>
+<p>The Theory of Constraints states that in any system there is one constraint at a time (occasionally two).  You can identify them by looking for work that is piling up.  Software development is a human process and not a factory</p>
+<p>When you eliminate one constraint you create another.  Microoptimizing one area while a larger constraint is in place is wasted effort.  The assumption is that the whole organization is focused on overall throughput and not on micro-optimizations.  The reward system and culture needs to reinforce this.</p>
+<p>XP uses the pull model.  Work is pulled through based on actual demand and not pushed through based on projected demand.</p>
+<h1>12 - Planning: Managing Scope</h1>
+<p>Plans should be mutually agreed upon, adjusted when necessary to reflect reality, to maintain.  They are not predictions of the future but representations of what we know about what <em>might</em> happen in the future.  Everyone on the team needs to be heard during planning.  Acknowledge wishes but only commit to reasonable needs.</p>
+<p>Planning includes these four steps:</p>
+<ol>
+<li>List the items of work</li>
+<li>Estimate the items</li>
+<li>Set a budget</li>
+<li>Agrre on the work that needs to be done within in the budget (don't change the estimates or the budget)</li>
+</ol>
+<p>It is important to get feedback as quickly as possible to improve estimates.</p>
+<p>The old adage of speed, quality, and price along with fixing two of them is problematic since Time and costs are generally set outside of the project which leaves quality as the only variable to manipulate.  Unfortunately, lowering quality increases time.  The variable left out is scope.</p>
+<p>When falling behind on a project, have the customer to prioritize the stories.  When things aren't going well, that's when you need to focus even more on values and principles so as to modify practices to bring about the desired result.</p>
+<p>The project balance of power: people who need work done and people who do work well.</p>
+<p>Pair programming increases, not decreases, programming efficiency.  Beck prefers to work with real estimates (hours).</p>
+<h1>13 - Testing: Early, Often, and Automated</h1>
+<p>Defects destroy trust on the team and with customers.  Defects as is preventing/eliminating defects though most are more expensive to fix than to prevent.</p>
+<p>There will always be defects.  One goal is to reduce defects to an economically sustainable and trust producing level.</p>
+<p>Double checking and Defect Cost Increase (DCI) are used by XP to increase the cost-effectiveness of testing.</p>
+<ul>
+<li>Double-checking is software testing.  Works best when two distinct thought processes arrive at the same answer. This includes switching off pairs and having one set of tests written by devs and the other from the perspective of the customers.</li>
+<li>DCI is the idea that the sooner you find and fix a defect, the cheaper that it is going to be.  This encourages shorter feedback loops which are enabled by testing.</li>
+</ul>
+<p>Automated tests break the stress cycle whereas manual testing enables it.  Beta testing is a symptom of week testing practices and poor commumnication.  Run load and stress tests continuously and automatically.</p>
+<p>Try to have only one test broken at a time.</p>
+<h1>14 - Designing: The Value of Time</h1>
+<p>Incremental design is making architecture and design part of daily development (design always).  It is making significant changes in small steps.  <em>Design is not done for its own sake in XP</em>.  That would violate the trust between the business and development teams.  <em>It doesn't matter what the theoretical best way is</em>.</p>
+<p>The physical archiecture metaphor when applied to software is detrimental since software is soft and inherently flexible as compared to physical construction.</p>
+<blockquote>
+<p>Design quality doesn't ensure success, but design failure can ensure failure.</p>
+</blockquote>
+<p>Migrations are an example of incremental design applied to databases.</p>
+<p><strong>Once and Only Once:</strong> design heuristic that says that data, structure, or logic should exist in only one place in a system.</p>
+<p>Arguments against incremental design include &quot;can't&quot; and &quot;won't&quot;.  &quot;Can't&quot; is addressable through education.  &quot;Won't&quot; involves a mindset shift and addressing the <em>why</em> behind it.</p>
+<p>When tackling a big ball of mud, when you touch a piece of code clean it up but don't take design improvements and refactorings too far.</p>
+<h2>Simple</h2>
+<p>Prefer simple solutions.  Simple includes: appropriate for the intended audience, communicative, factored, minimal.</p>
+<h1>15 - Scaling XP</h1>
+<p>There are several scaling dimensions in software development (below)</p>
+<h2>Number of People</h2>
+<p>When faced with a large problem, one approach is to:</p>
+<ol>
+<li>turn the problem into smaller problems</li>
+<li>Apply simple solutions</li>
+<li>Apply complex solutions if any problem is left</li>
+</ol>
+<p>Sometimes problems can be solved better by fewer developers (scaling employees addiction).   When it can't be, break the problem into smaller, autonomous chunks (<strong>conquer and divide approach</strong>) along its natural fracture lines after first working on the problem with a smaller team.  There should be little coordination cost between the various teams.</p>
+<h2>Size of Organization</h2>
+<p>When bringing about change in an organization, ensure that you still communicate with other parts of the business how they expect (at least initially).  Don't try to force others to change but lead by example and, through superior performance, they'll likely follow.</p>
+<h2>Time</h2>
+<p>Long-running XP projects work well becuase tests prevent many maintenance mistakes and tell the story of how they got where they were.</p>
+<h2>Problem Complexity</h2>
+<p>Working with others that have different specialities leads to sharing of knowledge and &quot;widening of the T&quot; and thus increased capabilities of the individual and the group as a whole.</p>
+<h2>Solution Complexity</h2>
+<p>Many systems become big and out of proportion to the problem that they solve.  The solution is to chip away at complexity while continuing to deliver.</p>
+<h2>Consequences of Failure</h2>
+<p>XP must be augmented by additional practices in mission critical applications.  They work together well as long as one maintains good relations with auditors.</p>
+<h1>17 - Creation Story</h1>
+<p>XP orininated from a Chrysler project in 1996 wherein the team was continually late, protecting themselves and making excuses, and exhausted.  The client knew the problem and the answer to rectify the situation.  Beck made a few changes and things were humming along but he was overly optimistic in regards to hitting due dates.  He panicked but eventually got over his dream of never missing a due date.</p>
+<h1>18 - Taylorism and Software</h1>
+<p>Frederick taylor was the first industrial engineer and pioneered the idea of scientific management whereby he would apply observation, hypothesis, and experimentation to improve the output of his factories. One of mottos, behind the standardization of tasks that he strove for, was &quot;The One Best Way&quot;.</p>
+<p>Unfortunately, there were three assumptions: things usually go according to plan,  micro-optimizations lead to macro optimizations, people are mostly interchangeable and need to be told what to do.</p>
+<p>Software development has unconciously inherited this social structure whereby there is a separation of planning from execution which is done by educated engineers who decide how the work is to be done and how long it will take.  Workers were cogs in a machine and he kept a separate quality department to ensure the output quality but also the workers quality of execution.  Thus the idea was born that <em>someone else is responsible for quality</em> and the job of the quality department becomes punitive instead of constructive. The social structure impeded the flow of communication and feedback.</p>
+<h1>19 - Toyota Production System</h1>
+<p>Encourages everyone to be responsible for the whole production line and quality of the product at the end and in between stages.  If anyone spots a defect, they pull a cord to stop the line (this is encrouraged).    All are involved in making improvements through finding the root cause of a problem, to eliminating waste (continuous improvement), to taking the lead in resolving the issues found.</p>
+<p>Eliminates the rigid social stratification.  The greatest waste is the waste of over production.  The information value of an item evaporates quickly if you don't use it immediately (the direct coupling function).</p>
+<h1>20 - Applying XP</h1>
+<p>Waste in software development typically is rooted in what we believe and feel rather than what we do.  Taking on a new methodology does not eliminate your existing problems.  The new methodology provides a new context in which to solve them.  The methodology does not address them.</p>
+<p>There is always a danger of reverting to old ways of doing things inside of a team and in the org as a whole.  It is important for teams to have an executive sponsor and to sell the benefits and the why of XP to those outside of the team.</p>
+<p>To start organizational change, first start with yourself: lead by example.  Expecting others to do what you are not willing to do yourself is disrespectful, ineffective, and a misalignment of authority and responsibility.</p>
+<p>Continously improving is a bit of a misnomer since it is a process that is littered with plateaus from which you can progress or revert. Individuals and teams don't always respond the same to the same set of practices or steps.</p>
+<p>Sudden turnarounds can happen if there's aligned values and recent pain.  However, those conditions should not be forced.</p>
+<h2>Coaches</h2>
+<p>In the beginning coaches are the ones who spot opportunities for improvement and leads the experiments addressing them (since the TRM of the team is low).  They identify and rectify communication, motivation, and courage issues while modelling effective values and practices.  They're responsible for the process as a whole.</p>
+<p>A coach should have enough technical skill to teach what people can't easily learn on their own.</p>
+<p><strong>A coach should encourage independence and not dependence.</strong></p>
+<h2>When you shouldn't use XP</h2>
+<p>If an organizationals actual values are in direct contradiction to XP do not use it.  <em>Acta non verba</em>.</p>
+<h1>21 - Purity</h1>
+<blockquote>
+<p>Are the team members doing all the things that make sense to them in a sustainable way? ... only they can answer that question.</p>
+</blockquote>
+<p>However, that doesn't mean that just doing anything is XP.  Quite to the contrary, the values, principles, and practices are there to provide guidance, challenge and accountability.</p>
+<blockquote>
+<p>The goal is successful and satisfying relationships and projects, not membership in the XP club.  You're an XPer when you hold XP's values and incorporate XP principles in your daily practice.</p>
+</blockquote>
+<h1>22 - Offshore Development</h1>
+<p>Multi-site development is doable in the XP context though it comes down to a business decision as to whether or not the waste created by not sitting together is offset by the advantages.</p>
+<p>To be successful:</p>
+<ul>
+<li>Embrace feedback because of isolation and distance</li>
+<li>Nurture communication because of the lack of face time and full-spectrum interaction</li>
+<li>Simplicity will be harder to achieve</li>
+<li>Courage is just as important</li>
+<li>Respecting others is even more important because of lifestyle and culture differences</li>
+</ul>
+<p>Practices may have to be modified.  Planning or meetings might have to occur more frequently to keep remote parties in the loop and to avoid having one site dictate what the other will do.</p>
+<h1>23 - The Timeless Way of Programming</h1>
+<p>Architect Christopher Alexander believed that an architect's selfish interests were not aligned with the client's since they, among other things, are missing how the client actually wants to live.  He collected architectural patterns that were not meant as a means unto themselvess but as a means of balancing power.</p>
+<p>However, his model still included a role for architects through joining their deep technical knowledge with that of the individual preferences and social relationships held by the user.</p>
+<p>There can be an imbalance of power. On one hand there's: &quot;we'll give you what you need even if you don't know you need it&quot; and on the other is that the business concerns dominate development.</p>
+<blockquote>
+<p>software development can't be the programmers and a bunch of other people.</p>
+</blockquote>
+<p>Bring technical and business concerns into harmony.</p>
+<p>The appropriate sharing of power and responsibility among the team may seem utopian.  The balance is contingent on mutual respect.  There is no absolute power.  Sharing power is pragmatic and not idealistic since a team can accomplish more than the sum of its members.</p>
+<h1>24 - Community and XP</h1>
+<p>Communities:</p>
+<ul>
+<li>provide a safe place to voice problems and share experiences that allow for conflicting views and the room to experiment.</li>
+<li>Listening is more important than talking.  When listening to perspective, you can listen andm, if asked offer your opinion.</li>
+<li>They provide accountability while respecting confidentiality and suspending judgement.</li>
+<li>Everyone's opinion holds value</li>
+<li>Valuable ideas can withstand scrutiny</li>
+</ul>
+<h1>25 - Conclusion</h1>
+<p>There is no improvement without first improving yourself.  The key is integrity: acting in accordance with professed values. Work to become worthy of respect and offer respect to others.</p>
+<p>Develop a style of work based on respectful relationships that are good for all involved.</p>
+
+    </div>
+</article>
+
+<style>
+    .content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .content-header {
+        margin-bottom: 3rem;
+    }
+
+    .title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .metadata {
+        margin: 1.5rem 0;
+    }
+
+    .primary-meta {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+        color: #ccc;
+    }
+
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .tag {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        display: inline-block;
+        transition: all 0.2s ease;
+    }
+
+    .tag:hover {
+        background-color: #e5e7eb;
+    }
+
+    .abstract {
+        font-size: 1.25rem;
+        color: #4b5563;
+        margin: 2rem 0;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .featured-image {
+        margin: 2rem auto;
+        text-align: center;
+        max-width: 700px;
+    }
+
+    .featured-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Specific image sizing based on image path */
+    img[src*="/books/"] {
+        max-width: 300px;
+    }
+
+    img[src*="/courses/"] {
+        max-width: 500px;
+    }
+
+    img[src*="/videos/"] {
+        max-width: 600px;
+    }
+
+    .content-body {
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: #1a1a1a;
+    }
+
+    @media (max-width: 768px) {
+        .title {
+            font-size: 2rem;
+        }
+
+        .abstract {
+            font-size: 1.125rem;
+        }
+
+        .featured-image {
+            max-width: 100%;
+        }
+        
+        img[src*="/books/"],
+        img[src*="/courses/"],
+        img[src*="/videos/"] {
+            max-width: 100%;
+            width: auto;
+        }
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2017 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

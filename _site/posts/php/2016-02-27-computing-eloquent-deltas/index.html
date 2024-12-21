@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computing Eloquent Model Deltas - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            Computing Eloquent Model Deltas
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2016-02-27T00:00:00.000Z">27 Feb 2016</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">laravel</span>
+                
+                <span class="tag">php</span>
+                
+                <span class="tag">eloquent</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>Computing the differences or <a href="https://en.wikipedia.org/wiki/Difference_quotient">deltas</a> between Eloquent models is a common<br>
+task in many data oriented apps.  The easiest way that I have found out how to do so is below:</p>
+<pre class="language-php"><code class="language-php"><span class="token comment">// This is assumed to be in \App\YourModel</span>
+
+<span class="token comment">/**
+ * @param \App\YourModel $model
+ *
+ * @return array
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">delta</span><span class="token punctuation">(</span><span class="token class-name class-name-fully-qualified type-declaration"><span class="token punctuation">\</span>App<span class="token punctuation">\</span>YourModel</span> <span class="token variable">$model</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">// array_diff() is an easy way to produce deltas</span>
+    <span class="token variable">$baseline</span> <span class="token operator">=</span> <span class="token variable">$model</span><span class="token operator">-></span><span class="token function">attributesToArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$possiblyChanged</span> <span class="token operator">=</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">attributesToArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/*
+    * $baseline = ['test' => 500, 'not_changed' => 5]
+    * $possiblyChanged = ['test' => 700, 'not_changed' => 5]
+    */</span>
+
+
+    <span class="token comment">/*
+    * $delta == ['test' => 700]
+    */</span>
+    <span class="token variable">$delta</span> <span class="token operator">=</span> <span class="token function">array_diff</span><span class="token punctuation">(</span><span class="token variable">$possiblyChanged</span><span class="token punctuation">,</span> <span class="token variable">$baseline</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+    <span class="token comment">// Here I unset possible changes that I don't care about</span>
+    <span class="token keyword">unset</span><span class="token punctuation">(</span><span class="token variable">$delta</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'id'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">unset</span><span class="token punctuation">(</span><span class="token variable">$delta</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'created_at'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">unset</span><span class="token punctuation">(</span><span class="token variable">$delta</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'updated_at'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token variable">$delta</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2016 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

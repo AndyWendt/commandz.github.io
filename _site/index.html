@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+
+
+<div class="home-grid">
+    <section class="recent-posts">
+        <h2>Recent Posts</h2>
+        <ul class="post-list">
+            
+            
+            <li>
+                <a href="/posts/development/http2-rest-awesome-sauce/">HTTP/2, Network Hacks, and REST API Design</a>
+                <time datetime="2019-04-10T00:09:09.000Z">10 Apr 2019</time>
+                
+            </li>
+            
+            <li>
+                <a href="/posts/development/2019-03-30-on-coupling-and-learning-the-lessons-of-the-past copy/">On Coupling and Learning the Lessons of the Past</a>
+                <time datetime="2019-03-30T00:09:09.000Z">30 Mar 2019</time>
+                
+            </li>
+            
+            <li>
+                <a href="/posts/development/2019-02-07-when-to-interface/">When to Interface</a>
+                <time datetime="2019-02-07T00:09:09.000Z">07 Feb 2019</time>
+                
+            </li>
+            
+            <li>
+                <a href="/posts/php/2018-04-21-check-php-version-compatibility/">How to Check PHP Version Compatibility</a>
+                <time datetime="2018-04-21T00:00:00.000Z">21 Apr 2018</time>
+                
+            </li>
+            
+            <li>
+                <a href="/posts/serverless/2017-10-14-serverless-express-API-lambda-boilerplate/">Serverless Express API Boilerplate</a>
+                <time datetime="2017-10-14T00:00:00.000Z">14 Oct 2017</time>
+                
+            </li>
+            
+        </ul>
+        <a href="/posts" class="view-all">View all posts →</a>
+    </section>
+
+    <div class="secondary-content">
+        <section class="recent-learning">
+            <h2>Learning</h2>
+            <ul class="post-list"><li>
+                    <a href="/learning/architecture/2019-10-26-ddd-language-in-context/">Language In Context</a>
+                    <time datetime="2019-10-26T00:09:09.000Z">26 Oct 2019</time>
+                </li><li>
+                    <a href="/learning/personal-growth/2019-07-02-listening-to-shame/">Listening to Shame</a>
+                    <time datetime="2019-07-02T00:00:00.000Z">02 Jul 2019</time>
+                </li><li>
+                    <a href="/learning/personal-growth/2019-07-02-the-power-of-vulnerability/">The Power of Vulnerability</a>
+                    <time datetime="2019-07-02T00:00:00.000Z">02 Jul 2019</time>
+                </li></ul>
+            <a href="/learning" class="view-all">View all learning →</a>
+        </section>
+
+        <section class="recent-snippets">
+            <h2>Snippets</h2>
+            <ul class="post-list"><li>
+                    <a href="/snippets/apple/2019-08-21-mac-provisioning-using-profiles/">Mac OS X Provisioning Using MDM Profiles</a>
+                    <time datetime="2019-08-21T00:09:09.000Z">21 Aug 2019</time>
+                </li><li>
+                    <a href="/snippets/development/a-mob-of-amateurs-vs-professionals/">A Mob of Amateurs vs. Professionals</a>
+                    <time datetime="2019-04-26T00:09:09.000Z">26 Apr 2019</time>
+                </li><li>
+                    <a href="/snippets/computer-science/selection-sort/">Selection Sort</a>
+                    <time datetime="2019-04-22T00:09:09.000Z">22 Apr 2019</time>
+                </li></ul>
+            <a href="/snippets" class="view-all">View all snippets →</a>
+        </section>
+    </div>
+</div>
+
+<style>
+.home-grid {
+    display: grid;
+    gap: 4rem;
+    margin: 4rem 0;
+}
+
+@media (min-width: 768px) {
+    .home-grid {
+        grid-template-columns: 3fr 2fr;
+        align-items: start;
+    }
+}
+
+.secondary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.recent-posts h2,
+.recent-learning h2,
+.recent-snippets h2 {
+    font-size: 1.8em;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.post-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.post-list li {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.post-list a {
+    text-decoration: none;
+    color: #1a73e8;
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+.post-list a:hover {
+    text-decoration: underline;
+}
+
+.post-list time {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.post-description {
+    color: #444;
+    margin: 0.25rem 0;
+    font-size: 0.95em;
+}
+
+.view-all {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #0066cc;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2024 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 
