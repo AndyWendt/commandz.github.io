@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deploying Multiple Sites Using Docker and Elastic Beanstalk - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            Deploying Multiple Sites Using Docker and Elastic Beanstalk
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2017-10-12T00:00:00.000Z">12 Oct 2017</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">docker</span>
+                
+                <span class="tag">elastic beanstalk</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>One of the problems that you face with many projects that you want to Dockerize is figuring out how to deploy them.  This is particularly challenging if you want to deploy and scale multiple projects on the same server or set of servers since most deployment solutions target a single application or project at a time.</p>
+<p>Elastic Beanstalk, for example, out of the box only supports single site deployment from its GUI. Same with it's single container Docker solution.  Likewise, other services such as Horuko and Google App Engine focus on single app deployments as well.</p>
+<p>As such, it can be particularly challenging to economically deploy multiple, smaller sites.  Often, you end up manually configuring or writing provisioning scripts to configure a server.  Unfortunately, that does not lend well to scaling or to creating new instances of the server. Worse, what if you forget how you provisioned the server?</p>
+<p>I ran into this recently when I needed to deploy multiple, smallish Wordpress sites to a single EC2 instance.  None of them were large enough to warrant their own instance and any one of them could take off at any given time and flood a tiny server with requests.</p>
+<p>After mulling the situation over, I decided that a good approach would be to utilize Elastic Beanstalk's <a href="http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker_ecs.html">multi-container Docker environment</a>.</p>
+<p>But, then I was faced with the problem of how to add the code for multiple sites to the Docker configuration.  I thought about using Docker volumes, from my experience with using <code>docker-compose.yml</code> files, but the code for the various sites would not be in the same repo (nor should it be) and I wanted a solution that could create a reproducible dev environment without using nasty hacks to get something up and running. So I crossed that off my list.</p>
+<p>The solution that I came to was creating a master repository that would hold the <code>Dockerrun.aws.json</code> file and the Nginx configuration; all the other sites would be a Docker image, with their own Dockerfile, and would be pulled down when launching or updating the server.</p>
+<p>This would allow each site to maintain it's own set of requirements while at the same time allowing for sites to be added seemlessly and nearly effortlessly in the future.  As Billy Mays, the famous infomercial marketer, used to say, &quot;but wait, there's more!&quot;</p>
+<p><img src="/images/but-wait-theres-more.gif" alt="But wait, there's more!"></p>
+<p>A side-benefit of Dockerizing these applications and using Elastic Beanstalk is that the server configuration and deployment information is now hosted in a repository.  That way, if a developer leaves or if you forget, as I often do, what the configuration of a particular server is, it is relatively easy to figure out what was going on.</p>
+<p>If you ever need to rebuild a server, it is just a few simple commands or an automated build trigger to set up a new one.  That paves the way for blue/green deploys, greater fault tolerance, and rapid application development.</p>
+<p>It's a win, win.</p>
+<p>In future articles, I am going to go over the master repository and <code>Dockerrun.aws.json</code> file that controls this setup.  Then I'll move onto the individual repositories and their <code>Dockerfile</code>'s.  Once we have that covered, I'll go over the handling of environment variables and how to deploy them to each site. After that, I'll detail how to deploy the Elastic Beanstalk instance.  Once that's done, I'll we'll go from there.</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2017 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

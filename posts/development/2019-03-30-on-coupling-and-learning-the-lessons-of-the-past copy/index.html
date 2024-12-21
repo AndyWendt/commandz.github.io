@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On Coupling and Learning the Lessons of the Past - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            On Coupling and Learning the Lessons of the Past
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2019-03-30T00:09:09.000Z">30 Mar 2019</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">object oriented</span>
+                
+                <span class="tag">oo</span>
+                
+                <span class="tag">architecture</span>
+                
+                <span class="tag">frameworks</span>
+                
+                <span class="tag">static methods</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <blockquote>
+<p>Those who cannot remember the past are condemned to repeat it<br>
+— George Santayana</p>
+</blockquote>
+<p>Justification of poor programming practices often stems from rationalizing one's actions through the lens of one's experiences.  Long after the original architectural decisions and implementation, the problems start to manifest themselves.  The tasks often should be small but end up as large tasks because of the difficulty to modify the implementation and architecture of the system.</p>
+<p>At great expense, lessons are often re-invented or not headed at all.  This often creates a case of cognitive dissonance in individuals and teams: they see themselves as competent or good developers and yet they do not head the lessons of the past.</p>
+<h3>A Static Harangue</h3>
+<p>Several lessons have been learned over the last several decades in regards to application coupling, but few are more lackadaisically transgressed than <a href="https://martinfowler.com/bliki/StaticSubstitution.html">those learned about static methods</a>.  Those who do not head these lessons essentially use static methods as class namespaced functions that are used throughout the application from anywhere.</p>
+<p>It can be easier, in some respects, to program in this manner because it's often procedural in nature and similar to things (functions) that are learned early in one's programming career. Therefore their usage generally requires a lower level of skill. However, they tightly couple an application and make it almost wholly untestable because the dependencies are not explicitly declared and they can be used anywhere from anywhere.</p>
+<p>So if you want to trade maintainability to lower the skill required to build an application, it might be the choice for you.  However, you'll be adding significant technical debt by doing so.  It is a well-known principle that &quot;the only way to go fast is to go well.&quot;  Therefore, you <a href="https://simpleprogrammer.com/static-methods-will-shock-you/">should</a> only use statics to declare true global constants (not global variables, mind you) and for assisting with object creation.  Anything else is typically asking for trouble.</p>
+<h3>The Service Folly</h3>
+<p>However, the lessons on coupling are often not only forgotten when implementing concretions but also conceptually when architecting applications and system.  Way back in the early nineties, the Gang of Four (GoF) authored the authoritative book, <a href="/books/computer-science/design-patterns-gang-of-four"><em>Design Patterns</em></a>.  Therein they made the statement that <em>&quot;tight coupling leads to monolithic systems&quot;</em>.  One thing that we know about human nature, and developers, in particular, is that they tend to be faddists: they chase whatever seems to be the coolest or shiniest.  Indeed, this happened when service-oriented architecture (<a href="https://en.wikipedia.org/wiki/Service-oriented_architecture">SOA</a>) came on the scene.  Teams indiscriminately rearchitected their applications so that their boundaries were separated by a network ostensibly to avoid a monolithic architecture.  However, they did not consider what actually made some monolithic applications unmaintainable—tight coupling.</p>
+<p>What many didn't see was that the real problem was a lack of layers or real boundaries.  Twenty years after the GoF, Robert C. Martin, in his book <a href="/books/development/clean-architecture/">Clean Architecture</a> made the point that &quot;microservices can still be coupled [to each other] by shared resources [or] by the data they share.&quot;  Furthermore, Martin stated that this is the sort of architectural decision that should be delayed as long as possible since microservices in and of themselves do not define an architecture. Microservices don’t fix coupling—good object-oriented design does.</p>
+<p>Microservicing is just one of many decoupling strategies (along with object-oriented techniques, packages, etc.) though it is the hardest and most definite boundary.  Martin Fowler in his work, <em><a href="/books/development/enterprise-application-architecture/#working-with-distribution-boundaries-91">Patterns of Enterprise Application Architecture</a></em>, exhorted his readers to <em>&quot;limit your distribution boundaries as much as possible since they are expensive&quot;</em>.  Microservicing is the sort of architectural decision that Martin believes should be delayed as long as possible and used only when you have questioned decoupling in this manner thoroughly. Otherwise, &quot;services that simply separate application behaviors are little more than expensive function calls&quot; (Martin).</p>
+<h3>The Insistent Framework</h3>
+<p>Lastly, another case of disregarding lessons, foolish over-reliance, and disregarding the dangers of coupling is an infatuation with frameworks.  Frameworks are often used as the high-level architecture that defines an application.  According to some of <a href="https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html">Martin's recent writings</a>, the high-level directory structure and architecture of frameworks does not communicate the intent of the application, and he contends that an application's architecture should be centered around Use Cases.</p>
+<blockquote>
+<p>Architectures are not (or should not) be about frameworks. Architectures should not be supplied by frameworks. Frameworks are tools to be used, not architectures to be conformed to. If your architecture is based on frameworks, then it cannot be based on your use cases.</p>
+</blockquote>
+<p>While not communicating an application's intent through its high-level directory structure may not be wholly wrong in and of itself, what is wrong is tight coupling to the framework's utilities and structural classes.  Doing so makes your application less testable, portable, and flexible. However, this line of thinking isn't new.  It's mainly a rehashing of existing principles.  Over two decades before Martin wrote his treatise on the nature of application architecture and its relation (or lack thereof) to frameworks, the <a href="/books/computer-science/design-patterns-gang-of-four/#frameworks-26">Gang of Four counseled their readers</a> to be wary of coupling to frameworks.</p>
+<blockquote>
+<p>Applications are dependent on the framework, and as such, they are particularly sensitive to changes in the framework interfaces.  Therefore, the application should only be loosely coupled to the framework.</p>
+</blockquote>
+<p>Sooner or later, everything old is new again.  However, is it that the old is new or is it that we forget the lessons of the past?</p>
+<p>To architect great applications and teams, you not only need to study the past, you need to apply the principles learned from such study.  If you're thinking about disregarding a lesson of the past, especially ones as well thought out as object-oriented architectural principles and industry best practices, you had better ask yourself why and default to assuming that you're wrong.</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2019 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

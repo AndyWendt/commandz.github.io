@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eloquent Eager Loading Constrained by Pivot - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            Eloquent Eager Loading Constrained by Pivot
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2019-02-16T00:09:09.000Z">16 Feb 2019</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">laravel</span>
+                
+                <span class="tag">php</span>
+                
+                <span class="tag">orm</span>
+                
+                <span class="tag">eloquent</span>
+                
+                <span class="tag">snippet</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>The other day I was chatting with a coworker about using Laravel Eloquent ORM's <code>wherePivot()</code> method to constrain eager loading using <code>with()</code> while working with Many-to-Many relationships.  Originally, the query that the coworker was trying was something like:</p>
+<pre><code>Article::where('id', 2)-&gt;with('authors')-&gt;wherePivot('display', true)-&gt;first();
+</code></pre>
+<p>However, that doesn't work because <code>with()</code> returns an instance of <code>\Illuminate\Database\Eloquent\Builder</code> whereas  <code>wherePivot()</code> needs to act on a <code>\Illuminate\Database\Eloquent\Relations\BelongsToMany</code> instance.</p>
+<p>During my time away from Laravel, I had forgotten how to do this offhand.  While I found a StackOverflow post regarding the general way to constrain eager loads, I was unsure if much had changed in the last couple of years and if there were any improvements to the method that I had used previously.</p>
+<p>Later I found the <a href="https://laravel.com/docs/5.7/eloquent-relationships#constraining-eager-loads">Laravel Docs entry on Eager Loading Constraints</a>.  My coworker and I agreed that the syntax is not as eloquent (pun intended) as one would hope when using Laravel.  You can use a relational method to set up the relationship and constrain it, but that doesn't allow you to pass in dynamic values to constrain the relationship.</p>
+<p>I put together an example showcasing the two different approaches with tests.  <a href="https://github.com/AndyWendt/eloquent-eager-loading-constrained-by-pivot">The code is on Github</a>.</p>
+<p>There are three tables (all made up for this example): <code>authors</code>, <code>author_article</code> (the many-to-many pivot), and <code>articles</code>.  On the <code>author_article</code> table, there is a <code>boolean</code> property called <code>display</code> which toggles whether or not a particular author should be displayed for an <code>article</code>.  Our goal is to be able to retrieve authors to display for articles or all authors for articles when we so desire.</p>
+<p><img src="/images/snippets/laravel/articles-authors-eager-loading-constraints.png" alt="Laravel Eloquent Eager Loading Constraints"></p>
+<p>The first way to constrain the eager loading based on the pivot is to chain a <code>wherePivot()</code> onto a <code>belongsToMany()</code> relationship.</p>
+<pre class="language-php"><code class="language-php"><span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">authorsToDisplay</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">belongsToMany</span><span class="token punctuation">(</span><span class="token class-name static-context">Author</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">wherePivot</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'display'</span><span class="token punctuation">,</span> <span class="token constant boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>When you find the particular article, you must call the relationship method defined in the <code>with()</code> statement (<code>authorsToDisplay</code>) instead of the normal <code>authors</code> method.  However, you almost always do not want to call the relation method when retrieving the relations given <a href="https://laravel.com/docs/5.7/eloquent-relationships#eager-loading">how Eloquent Eager loading works</a>.  When you call the relationship method instead of the parameter on the model corresponding to the model, it always fetches the data fresh (i.e. <code>$article-&gt;authorsToDisplay()-&gt;get()</code> vs. <code>$article-&gt;authorsToDisplay</code>).</p>
+<pre class="language-php"><code class="language-php"><span class="token variable">$articlesWithAuthors</span> <span class="token operator">=</span> <span class="token class-name static-context">Article</span><span class="token operator">::</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'id'</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'authorsToDisplay'</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token property">authorsToDisplay</span><span class="token operator">-></span><span class="token function">toArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">/*
+ Returns the following
+ [
+     [
+       "id" => 3,
+       "name" => "William Strunk",
+       "created_at" => null,
+       "updated_at" => null,
+       "pivot" => [
+         "article_id" => "2",
+         "author_id" => "3",
+       ],
+     ],
+     [
+       "id" => 5,
+       "name" => "E.B. White",
+       "created_at" => null,
+       "updated_at" => null,
+       "pivot" => [
+         "article_id" => "2",
+         "author_id" => "5",
+       ],
+     ],
+   ]
+*/</span>
+</code></pre>
+<p>The other way to constrain the relation, using dynamic variables rather than statically coded ones in the relationship method, is to use the standard relationship method (<code>authors()</code> in this case) and to constrain it when the <code>with()</code> call is made.  In the <code>with()</code> call, you can use an array with array keys matching with the relationship method names correlated with array values of anonymous functions.  The anonymous functions are passed a query object which can be used to constrain the eager load based on the pivot table or another constraint.</p>
+<p>Here is what the authors' relationship looks like:</p>
+<pre class="language-php"><code class="language-php"><span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">authors</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">belongsToMany</span><span class="token punctuation">(</span><span class="token class-name static-context">Author</span><span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Also, below is how the values could be retrieved.  Additional constraints can be placed in the anonymous function to restrict the <code>with()</code> eager loading further.</p>
+<pre class="language-php"><code class="language-php"><span class="token variable">$articlesWithAuthors</span> <span class="token operator">=</span> <span class="token class-name static-context">Article</span><span class="token operator">::</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'id'</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
+    <span class="token operator">-></span><span class="token function">with</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'authors'</span> <span class="token operator">=></span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token variable">$query</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token variable">$query</span><span class="token operator">-></span><span class="token function">wherePivot</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'display'</span><span class="token punctuation">,</span> <span class="token constant boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">/*
+ Returns the following
+ [
+     [
+       "id" => 3,
+       "name" => "William Strunk",
+       "created_at" => null,
+       "updated_at" => null,
+       "pivot" => [
+         "article_id" => "2",
+         "author_id" => "3",
+       ],
+     ],
+     [
+       "id" => 5,
+       "name" => "E.B. White",
+       "created_at" => null,
+       "updated_at" => null,
+       "pivot" => [
+         "article_id" => "2",
+         "author_id" => "5",
+       ],
+     ],
+   ]
+*/</span>
+</code></pre>
+<p>Using Eager Loading Constraints in this fashion would be even more helpful in the case of a genuinely dynamic column where there could be <code>N</code> number of values instead of a binary column.  To see the Article class in action, <a href="https://github.com/AndyWendt/eloquent-eager-loading-constrained-by-pivot/blob/master/app/Article.php">you can view it in the repository</a>.</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2019 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

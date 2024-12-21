@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How To Get 35 Records FROM 1 — Or Why You Must Declare Your JOIN Type - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            How To Get 35 Records FROM 1 — Or Why You Must Declare Your JOIN Type
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2016-01-04T00:00:00.000Z">04 Jan 2016</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">joins</span>
+                
+                <span class="tag">mysql</span>
+                
+                <span class="tag">n+1</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>The <code>FROM</code> clause in MySql is completed first and it provides the table from which other operations will be run.<br>
+Even with that essential description, some constructions of the FROM can be difficult to understand and provide you<br>
+with wildly unexpected results.</p>
+<p>Those unexpected results come from the fact that the tables in the FROM clause are combined into one table for<br>
+querying whether you specify the type of JOIN or not.  What's worse is the default JOIN is a <a href="https://en.wikipedia.org/wiki/Join_(SQL)#Cross_join">CROSS JOIN</a><br>
+(aka Cartesian Join).  Which has undoubtedly been the source of many painful, late-nights finding bugs.</p>
+<h3>Let's create a schema and a few tables for demonstration:</h3>
+<pre><code>create schema testing;
+
+use testing;
+
+create table `table1` 
+(
+	`id` int unsigned not null auto_increment primary key,
+    `value` varchar(255) not null
+);
+
+
+create table `table2` 
+(
+	`id` int unsigned not null auto_increment primary key,
+    `value` varchar(255) not null
+);
+
+create table `table3` 
+(
+	`id` int unsigned not null auto_increment primary key,
+    `value` varchar(255) not null
+);
+</code></pre>
+<h3>Next let's insert some data:</h3>
+<pre><code>INSERT INTO `table1` (`value`)
+    VALUES (1),(2),(3),(4),(5);
+
+INSERT INTO `table2` (`value`)
+    VALUES (6),(7),(8),(9),(10);
+
+INSERT INTO `table3` (`value`)
+    VALUES (11),(12),(13),(14),(15),(16),(17);
+</code></pre>
+<h3>Let's count some numbers</h3>
+<p>Given the following query, what do you think the count will be?  There is only a single <code>1</code> in all those tables<br>
+right?  Not with a <a href="https://en.wikipedia.org/wiki/Join_(SQL)#Cross_join">CROSS JOIN</a>.  You get 35 records.  Ya.  Read'em and weep.</p>
+<pre><code>SELECT count(testing.table1.id) as count 
+FROM 
+	testing.table1,
+	testing.table2,
+   testing.table3
+WHERE testing.table1.id = 1;
+</code></pre>
+<p>You think that has the potential to cause errors?  As someone without much experience with SQL, would you expect that<br>
+result given the above FROM syntax?</p>
+<p>Needless to say, it is always a good idea to <strong>explicitly declare the JOIN type.</strong></p>
+<p>I found this <a href="http://www.databasejournal.com/features/mysql/article.php/3901221/Identifying-and-Eliminating-the-Dreaded-Cartesian-Product.htm">article</a><br>
+to be a good overview of Cartesian Joins.</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2016 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

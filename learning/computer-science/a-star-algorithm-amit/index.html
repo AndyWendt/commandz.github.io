@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A* Algorithm Notes on Amit Patel&#39;s Work - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            A* Algorithm Notes on Amit Patel&#39;s Work
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2019-04-17T00:09:09.000Z">17 Apr 2019</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">a star</span>
+                
+                <span class="tag">algorithms</span>
+                
+                <span class="tag">computer science</span>
+                
+                <span class="tag">cs</span>
+                
+                <span class="tag">learning</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>Notes on Amit Patel's <a href="http://theory.stanford.edu/~amitp/GameProgramming/">work</a></p>
+<h2>Introduction (1)</h2>
+<p>Pathfinders have advantages over movement algorithms when the routes or obstacles are slowly changing, or they are long.  Movement algorithms are better when the paths are short, and the paths or obstacles are changing.  Pathfinding algorithms from computer science books work on graphs.  Humans understand things innately that algorithms don't: distances, directions, and symmetry.</p>
+<h3>Dykstra's algorithm and Greedy Best-First Search (4)</h3>
+<p>Dykstra's algorithm works by repeatedly examining closest not-yet-examined vertices from the origin, expanding outwards until it reaches the goal.  It scans a large area, but it is guaranteed to find the shortest path as long as more of the edges have a negative cost.</p>
+<p>It runs much faster since it uses a heuristic to estimate how far from the goal it is and thus guide its decisions.  It is that much faster since it examines fewer vertices and it naturally proceeds toward the goal rather than searching in all directions.  When encountering a concave obstacle, Dykstra's algorithm finds the shortest path, but it does significantly more work.  Greedy best-first-search only considers the cost to the goal and ignores the cost of the path thus far.  It continues on paths even if they are quite long.</p>
+<h3>A*</h3>
+<p>Can be used to find the shortest path and it uses a heuristic to guide itself.  Thus it seemingly attains the best of both Dykstra's algorithm and greedy best-first-search.  It favors indices that are close to the starting point (like Dykstra's), but it also favors vertices close to the goal (like greedy best-first-search).  Algorithm (<code>f</code>) is cost of path plus heuristic: <code>f(n) = g(n) + h(n)</code>.</p>
+<h2>Heuristics (1)</h2>
+<p>The heuristic function (<code>h(n)</code>) can be used to tailor your application for speed or accuracy, and it doesn't have to be static. <code>g(n)</code> is the cost of the path.</p>
+<ul>
+<li>if <code>h(n) &lt;= g(n)</code> then A* expands its search and is slower</li>
+<li>if <code>h(n) = g(n)</code> then A* will be very fast though it won't happen in every case</li>
+<li>if <code>h(n)</code> is sometimes <code>&gt; g(n)</code> then A* is not guarenteed to find the shortest path.</li>
+<li>if <code>h(n)</code> is much <code>&gt; g(n)</code> then only <code>h(n)</code> plays a role and it turns into greedy best-first-search.</li>
+</ul>
+<p>You often don't need the best solution.  You often only need something close.  Similarly, using a heuristic function that never over-estimates means that it will sometimes underestimate (quite a bit).</p>
+<ul>
+<li>There's a choice between speed and accuracy though it doesn't have to be global nor immutable.</li>
+<li>A* computes <code>f(n) = g(n) + h(n)</code>.  <code>g(n) + h(n)</code> must be on the same scale in order to add them.</li>
+</ul>
+<h3>Exact Heuristics (4)</h3>
+<p>A* is computer the function (<code>f()</code>) at every node.  When <code>h(n) = g(n)</code> then <code>f(n)</code> doesn't change.  Nodes not on the right path will have <code>&gt; f()</code> than the nodes that are on the right path.  One way to speed up on exact <code>h(n)</code> is to precompute the shortest path between pairs of points.  However, this isn't feasible because of performance considerations in many cases.  One way to get around this is to use a coarse grid or compute between waypoints (formula).</p>
+<h3>Heuristics for Grid Maps (5)</h3>
+<ul>
+<li>For 4 or 6 directions of movement use Manhattan</li>
+<li>For 8 directions use diagonal</li>
+<li>For any use Euclidean</li>
+<li>Don't square the distance, use the square root for euclidean otherwise it degrades into greedy best first search or Dykstra's.</li>
+</ul>
+<p>If you want to search for paths to all of several, then Dykstra's might be your best shot.</p>
+<h3>Breaking Ties (12)</h3>
+<p>The quick hack is to adjust the <code>g</code> or <code>h</code> values.  The tiebreaker needs to be deterministic with respect to the vertex.</p>
+<p>One way is to nudge <code>h</code> slightly upward (it will prefer vertices close to the goal).  A* will explore far less of the map by using the tiebreaker: <code>p &lt; (min cost of taking one step) / (expected max path length)</code>.</p>
+<p>One way is to pass <code>h</code> to the comparison function (<code>f</code>).  Another way is to add a deterministic random number to the heuristic or edge costs.  You can do so by computing a hash of the coordinates.  It breaks more ties than the former (added to Manhattan).</p>
+<p>Another way is to prefer paths along a straight line from the starting point to the goal (formula in the paper).  Another way to construct the priority queue is to ensure that new insertions with a specific <code>f</code> are always greater than old with the same <code>f</code>.</p>
+<p>Another way is to minimize turns by looking at the <code>x,y</code> and potentially adding a penalty depending on the direction in relation to the goal.  However, breaking ties is just a bandaid to the underlying problem.  Alternate map representations can help by reducing the number of nodes.</p>
+<p>Reducing the nodes visited also helps.  You can also speed up node processing.</p>
+<h3>Approximate Heuristics (17)</h3>
+<p>Calculating exact distances is ideal but is usually impractical.  You can often use an approximation.  ALT A* uses landmarks and triangle inequality to preprocess the pathfinding graph.  Some call this differential heuristics.   Can be compressed.   You can also use distance oracles.  Landmarks are a specific case of a general approach.</p>
+<h2>Dealing with Moving Obstacles</h2>
+<h3>Recalculating Paths (1)</h3>
+<ul>
+<li>Methods
+<ul>
+<li>Every <code>N</code> steps</li>
+<li>When extra CPU cycles are available</li>
+<li>Turns a corner or passes a waypoint</li>
+<li>The world near the unit has changed</li>
+</ul>
+</li>
+</ul>
+<p>Path recalculation is expensive since a lot of information is thrown away.  Not a good idea if you expect to have many long paths.  Would be better to reuse.</p>
+<h3>Path Splicing (2)</h3>
+<p>To splice paths, one way is to use the local repair strategy (basically focus on closer paths and not worry about ones further away until you get closer).  You can often detect bad paths by looking at their length.  Path splicing will compute <code>2N to 3N</code> path steps independent of <code>M</code> (number of steps for splicing).</p>
+<h3>Predicting Obstacle Movement (4)</h3>
+<p>You can also have units subscribe to changes in a region and polling.  You can also predict positions of obstacles for pathfinding.  A* can be modified to keep track of the time required to reach a point.  The cost function can take this into account.</p>
+<h2>Implementation Notes</h2>
+<p>The A* algorithm has two sets: open, candidates to examine; closed, candidates already examined.  Open is the frontier while closed is the interior.  The main loop repeatedly pulls out the best node in open and checks if it is the goal node, then we're done else it gets added to closed.  Then <code>N</code> neighbors are examined.</p>
+<h3>Ways to increase performance (3)</h3>
+<p>Decrease the size of the graph, improve the accuracy of the heuristic, or make the priority queue faster.</p>
+<h3>Set Representation (5)</h3>
+<p>Three primary operations of the data structure or set: remove-best, check if exists, insert new nodes.  This matches up closely with a priority queue.  The best generic choice is a binary heap.  Various data structures for A* discussed.  In a data structure, we're not just looking for asymptotic (Big O) behavior.  We're also looking for a low constant.  None of the underlying data structures are entirely satisfactory, and it is recommended to use a hybrid data structure.</p>
+<h3>Optimizations (14)</h3>
+<p>A shorter path is often a better path. However, they can still be expensive to compute.  Strategies: immediate start, get the unit moving and compute a path later; early exit, get a partial path; Interruptible, compute a path for <code>N</code> distance and store the state to come back to it later; and group by having multiple units flocking together.</p>
+<h2>Space Used by Precalculated Paths</h2>
+<p>Path compression, waypoints, and beacons are all space saving techniques for paths.  Waypoints rely on well-known paths calculated beforehand.</p>
+<h2>Variants of A*</h2>
+<ul>
+<li>Beam Search (1)</li>
+</ul>
+<p>Beam search places a limit on the size of the open set.  When it becomes too large the node with the worst chances of giving a good path is dropped.</p>
+<ul>
+<li>Iterative Deepening (1)</li>
+</ul>
+<p>Iterative Deepening A* enhancements such as IDA* start with an approximate answer and make it more accurate.  The name comes from game tree searches.  When your answer doesn't change or improve much, then you assume you have a pretty good answer.  IDA* tends to increase computation while reducing memory.  Not a huge win typically.</p>
+<ul>
+<li>Dynamic Weighting (2)</li>
+</ul>
+<p>It's more important to get anywhere quickly at the start and at the end it's more important to get to the goal.</p>
+<ul>
+<li>Bandwidth Search</li>
+</ul>
+<p>Not very useful</p>
+<ul>
+<li>Bidirectional Search</li>
+</ul>
+<p>Starts two searches one at the start and another at the end to keep the trees smaller.  Two variants: front-to-front and retargeting</p>
+<ul>
+<li>Dynamic A* and Lifelong Planning A*</li>
+</ul>
+<p>D* allows for changes after the initial path is computed and when you don't have complete info.  It can correct mistakes.  LPA* is for when costs are changing, or the map may be invalidated.  It reuses previous A* computations.</p>
+<p>Both use lots of memory and isn't ordinarily useful with lots of moving units.</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2019 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

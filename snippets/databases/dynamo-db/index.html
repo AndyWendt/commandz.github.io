@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DynamoDB Notes - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            DynamoDB Notes
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2017-03-21T00:09:09.000Z">21 Mar 2017</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">document store</span>
+                
+                <span class="tag">key value</span>
+                
+                <span class="tag">nosql</span>
+                
+                <span class="tag">sql</span>
+                
+                <span class="tag">snippet</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <p>Scaling, optimization etc all handled by dynamodb</p>
+<h2>Types of nosql</h2>
+<ul>
+<li>key-value databases</li>
+<li>document databases</li>
+<li>column-family databases</li>
+<li>Graph databases</li>
+</ul>
+<p>DynamoDB is a mix of key-value and document database</p>
+<p>Throughput units</p>
+<h2>Datamodel</h2>
+<p>items are like rows</p>
+<p>Attributes are like columns</p>
+<p>Keys -- single or composite</p>
+<p>An attribute can only be up to 400kb of data</p>
+<h2>Creating tables</h2>
+<h3>Keys</h3>
+<ul>
+<li>
+<p>Hash Primary Key</p>
+<ul>
+<li>Unique, required, single attribute</li>
+<li>DynamoDB creates unordered index
+<ul>
+<li>You can't creat queries on an unordered index</li>
+</ul>
+</li>
+<li>Use when you know the id/key</li>
+</ul>
+</li>
+<li>
+<p>Hash and Range Primary Key</p>
+<ul>
+<li>Key is comprised of two attributes</li>
+<li>Combination must be unique</li>
+<li>Unordered index + sorted range index</li>
+<li>Best for query, grouping scenarios</li>
+<li>example: client_id as hash and order_id as range</li>
+</ul>
+</li>
+</ul>
+<h2>Data Types</h2>
+<ul>
+<li>Scalar
+<ul>
+<li>string, number, binary, boolean, null</li>
+</ul>
+</li>
+<li>multi-value types
+<ul>
+<li>String, number, and binary sets</li>
+</ul>
+</li>
+<li>Document types
+<ul>
+<li>List (array)</li>
+<li>Map (Object) (should use this for OJ Stripe object)</li>
+</ul>
+</li>
+</ul>
+<h2>Throughput units</h2>
+<ul>
+<li>
+<p>Reads in blocks of 4kb</p>
+</li>
+<li>
+<p>Writes in blocks of 1kb</p>
+</li>
+<li>
+<p>Read capacity units per second</p>
+</li>
+<li>
+<p>Write capacity units per second</p>
+</li>
+<li>
+<p>Eventually consistent vs strongly consistent reads</p>
+</li>
+<li>
+<p>Impact of secondary indexes</p>
+</li>
+</ul>
+<h2>Partioning</h2>
+<ul>
+<li>Single partition can hold ~10gb of data</li>
+<li>Throughput spread across partitions</li>
+<li>DynamoDB automatically partitions based on hash key</li>
+<li>partitions are limited to about 3000 read capacity units and 1000 write capacity</li>
+<li>Dynamo will never shrink the size of your partitions</li>
+<li>Unused capacity reserved for bursts</li>
+</ul>
+<h2>Table design</h2>
+<ul>
+<li>Avoid hot keys
+<ul>
+<li>really important to avoid hot keys</li>
+<li>Need uniform access</li>
+<li>Random extension to hash key</li>
+</ul>
+</li>
+<li>Time series data in multiple tables
+<ul>
+<li>put into tables based on monthly or weekly data</li>
+</ul>
+</li>
+<li>Test applications ahead of time</li>
+<li>Storage of large items elsewhwere</li>
+<li>Use caching solutions for popular items</li>
+</ul>
+<hr>
+<h2>Querying</h2>
+<ul>
+<li>
+<p>GetItem</p>
+<ul>
+<li>uses primary key</li>
+<li>eventually consistent by default</li>
+</ul>
+</li>
+<li>
+<p>Query</p>
+<ul>
+<li>Find item via primary key attributes(s) for table or index</li>
+<li>Retrieved in sorted order when using range key</li>
+</ul>
+</li>
+<li>
+<p>Scan</p>
+<ul>
+<li>Reads every item in a table or index</li>
+<li>slow as table grows</li>
+<li>you can run parallel scans</li>
+</ul>
+</li>
+<li>
+<p>Filters and pagination support for query or scan</p>
+</li>
+</ul>
+<h2>Secondary Indexes</h2>
+<ul>
+<li>Alternate keys for querying and scanning</li>
+<li>up to 5 allowed per source table</li>
+<li>contains all or subset of attributes</li>
+<li>Automatically maintained</li>
+<li>uses provisioned throughput
+<ul>
+<li>Throughtput capacity units split between table and index</li>
+</ul>
+</li>
+<li>no size limit</li>
+</ul>
+<h3>Global Secondary Index</h3>
+<ul>
+<li>For querying non-key attributes</li>
+<li>Hash key or hash and range key
+<ul>
+<li>different view into the data</li>
+</ul>
+</li>
+<li>projected attributes get copied into the index</li>
+<li>query or scan only</li>
+</ul>
+<h3>Local Secondary Index</h3>
+<ul>
+<li>Alternate range key for hash key</li>
+<li>For each hash key, 10GB max</li>
+<li>Applied when creating the table</li>
+<li>Basically a different index</li>
+<li>Projected attributes copied into the index</li>
+<li>Query or scan only</li>
+<li>throughput taken from the main table throughput</li>
+</ul>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2017 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 

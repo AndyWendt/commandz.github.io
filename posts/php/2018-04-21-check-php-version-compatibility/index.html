@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Check PHP Version Compatibility - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1>
+            How to Check PHP Version Compatibility
+            
+        </h1>
+        
+        <div class="metadata">
+            
+            <time datetime="2018-04-21T00:00:00.000Z">21 Apr 2018</time>
+            
+
+            
+
+            
+
+            
+            <span class="separator">•</span>
+            <span class="tags">
+                
+                <span class="tag">php</span>
+                
+                <span class="tag">devops</span>
+                
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="content-body">
+        <h2>Phan Static Analyzer</h2>
+<p>When trying to determine what needs to be updated in a project to make it PHP <code>7.*</code> compatible, it is nice to use a commandline program to assist.  I straight away tried to use <a href="https://github.com/phan/phan">phan</a> static analyzer since<br>
+I had used it on other projects to check the quality of code but it was<br>
+impossibly slow, when using it for a codebase plus vendor libs, even when <code>target_php_version</code><br>
+was the only analyzer turned on when running <code>phan .</code> with the following config:</p>
+<pre class="language-php"><code class="language-php">
+<span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+
+<span class="token comment">/**
+ * This configuration will be read and overlaid on top of the
+ * default configuration. Command line arguments will be applied
+ * after this file is read.
+ */</span>
+<span class="token keyword">return</span> <span class="token punctuation">[</span>
+
+    <span class="token comment">// Supported values: '7.0', '7.1', '7.2', null.</span>
+    <span class="token comment">// If this is set to null,</span>
+    <span class="token comment">// then Phan assumes the PHP version which is closest to the minor version</span>
+    <span class="token comment">// of the php executable used to execute phan.</span>
+    <span class="token string double-quoted-string">"target_php_version"</span> <span class="token operator">=></span> <span class="token string single-quoted-string">'7.1'</span><span class="token punctuation">,</span>
+
+    <span class="token comment">// A list of directories that should be parsed for class and</span>
+    <span class="token comment">// method information. After excluding the directories</span>
+    <span class="token comment">// defined in exclude_analysis_directory_list, the remaining</span>
+    <span class="token comment">// files will be statically analyzed for errors.</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// Thus, both first-party and third-party code being used by</span>
+    <span class="token comment">// your application should be included in this list.</span>
+    <span class="token string single-quoted-string">'directory_list'</span> <span class="token operator">=></span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'public'</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+
+    <span class="token comment">// A directory list that defines files that will be excluded</span>
+    <span class="token comment">// from static analysis, but whose class and method</span>
+    <span class="token comment">// information should be included.</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// Generally, you'll want to include the directories for</span>
+    <span class="token comment">// third-party code (such as "vendor/") in this list.</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// n.b.: If you'd like to parse but not analyze 3rd</span>
+    <span class="token comment">//       party code, directories containing that code</span>
+    <span class="token comment">//       should be added to the `directory_list` as</span>
+    <span class="token comment">//       to `exclude_analysis_directory_list`.</span>
+    <span class="token string double-quoted-string">"exclude_analysis_directory_list"</span> <span class="token operator">=></span> <span class="token punctuation">[</span>
+        <span class="token string single-quoted-string">'vendor/'</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+
+    <span class="token comment">// A list of plugin files to execute.</span>
+    <span class="token comment">// See https://github.com/phan/phan/tree/master/.phan/plugins for even more.</span>
+    <span class="token comment">// (Pass these in as relative paths.</span>
+    <span class="token comment">// The 0.10.2 release will allow passing 'AlwaysReturnPlugin' if referring to a plugin that is bundled with Phan)</span>
+    <span class="token string single-quoted-string">'plugins'</span> <span class="token operator">=></span> <span class="token punctuation">[</span>
+        <span class="token comment">// checks if a function, closure or method unconditionally returns.</span>
+        <span class="token comment">//'AlwaysReturnPlugin',  // can also be written as 'vendor/phan/phan/.phan/plugins/AlwaysReturnPlugin.php'</span>
+        <span class="token comment">// Checks for syntactically unreachable statements in</span>
+        <span class="token comment">// the global scope or function bodies.</span>
+        <span class="token comment">//'UnreachableCodePlugin',</span>
+        <span class="token comment">//'DollarDollarPlugin',</span>
+        <span class="token comment">//'DuplicateArrayKeyPlugin',</span>
+        <span class="token comment">//'PregRegexCheckerPlugin',</span>
+        <span class="token comment">//'PrintfCheckerPlugin',</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">;</span>
+</span></code></pre>
+<h2>The Misfits: <code>php7cc</code> and <code>phpstan</code></h2>
+<p>After waiting for phan after what seemed to be an inordinate amount of time, I gave up and decided to find a different<br>
+solution.  I, of course, found <a href="https://github.com/sstalle/php7cc">PHP 7 Compatibility Checker</a> (php7cc) but the project<br>
+is no longer supported.  I immediately ditched php7cc since it may not work for what I'm intending to check.</p>
+<p><a href="https://github.com/phpstan/phpstan">PHPStan Static Analysis Tool</a> is actively maintained but I couldn't find any references<br>
+to checking PHP version compatibility in a code base.  While it might still check for php version incompatibility, I<br>
+opted for a tool that was specifically designed to assist with the migration of older PHP codebases to PHP 7.</p>
+<h2>The Winner: PHP 7 Migration Assistant Report (php7mar)</h2>
+<p>After searching and testing a few different tools out, I finally settled on <a href="https://github.com/Alexia/php7mar">php7mar</a><br>
+since it is specifically designed to do the job that I was looking for a tool to do along with being fast enough to be bearable.<br>
+Whereas phan never did complete before I gave up, php7mar was done in a minute or so for a codebase that contained nearly a<br>
+thousand files and 318,557 lines.</p>
+<p>However, there is a downside.  php7mar uses the installed PHP binary that you have on your system.  While you can specify<br>
+a different PHP binary than the default one by running the command with the <code>--php=&quot;/path/to/php/binary/php&quot;</code> option,<br>
+you still have to figure out how to install different PHP versions on your particular OS or use another workaround such<br>
+as Docker or Vagrant.</p>
+<p>Even given this downside, it is still the best option that I found given its speed and the comprehensiveness of the generated<br>
+report.</p>
+<p>To install <code>php7mar</code>, you can <a href="https://github.com/Alexia/php7mar">git clone it</a>, download the zip off of<br>
+<a href="https://github.com/Alexia/php7mar">Github</a>, or just download the <code>mar.php</code> file from the<br>
+<a href="https://github.com/Alexia/php7mar">Github repository</a>.  Move the file to wherever you'd like to run it from.</p>
+<p>I used the following command to run php7mar:<br>
+<code>php /path/to/php7mar-master/mar.php -f=&quot;/path/to/code/to/check&quot; -r=&quot;/path/to/output/directory&quot;</code></p>
+<p>The output is a markdown file that is timestamped.  It's contents resemble the following:</p>
+<pre class="language-markdown"><code class="language-markdown">2018-04-20T17:34:17-06:00
+Scanning /path/to/codebase
+Including file extensions: php
+Processed 318557 lines contained in 901 files.
+Processing took 21.512763977051 seconds.
+
+
+<span class="token title important"><span class="token punctuation">#</span> critical</span>
+<span class="token title important"><span class="token punctuation">####</span> /path/to/public/wp-admin/includes/class-ftp-pure.php</span>
+<span class="token list punctuation">*</span> oldClassConstructors
+ <span class="token list punctuation">*</span> Line 28: <span class="token code-snippet code keyword">`	function ftp($verb=FALSE, $le=FALSE) {`</span>
+
+<span class="token title important"><span class="token punctuation">####</span> /path/to/public/wp-admin/includes/class-ftp-sockets.php</span>
+<span class="token list punctuation">*</span> oldClassConstructors
+ <span class="token list punctuation">*</span> Line 28: <span class="token code-snippet code keyword">`	function ftp($verb=FALSE, $le=FALSE) {`</span>
+ 
+... and so on ...
+</code></pre>
+<p>As you can see, there is a bit of Wordpress code in the codebase that I checked.  Unsurprisingly, this version of<br>
+Wordpress is not compatible.</p>
+<p>In addition to using php7mar, you can also use <a href="https://www.jetbrains.com/phpstorm/">PHPStorm</a> to check code as you write<br>
+it for version compatibility.  However, I believe that a commandline tool is much easier to use, especially when checking<br>
+vendor files, than an IDE is for doing a bulk verification of compatibility.</p>
+
+    </div>
+</article>
+
+<style>
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .metadata {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+    }
+
+    .unpublished-badge {
+        background-color: #ffd700;
+        color: #000;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    .tag {
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-right: 0.3rem;
+    }
+
+    .tag:last-child {
+        margin-right: 0;
+    }
+</style> 
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2018 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 
