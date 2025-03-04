@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chip Huyen&#39;s AI Engineering - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1 class="title">Chip Huyen&#39;s AI Engineering</h1>
+        
+        <div class="metadata">
+            <div class="primary-meta">
+                
+                <time datetime="2025-02-07T00:00:00.000Z">07 Feb 2025</time>
+                
+
+                
+
+                
+            </div>
+
+            
+            <div class="tags-container">
+                
+                <span class="tag">ai</span>
+                
+                <span class="tag">llm</span>
+                
+                <span class="tag">learning</span>
+                
+            </div>
+            
+        </div>
+
+        
+        <div class="abstract">
+            Building Applications with Foundation Models
+        </div>
+        
+
+        
+        <div class="featured-image">
+            <a href="https://www.oreilly.com/library/view/ai-engineering/9781098166298/" target="_blank" rel="noopener">
+                <img src="/images/learning/ai-engineering-book.jpeg" alt="Chip Huyen&#39;s AI Engineering">
+            </a>
+        </div>
+        
+    </header>
+
+    <div class="content-body">
+        <h1>6. RAG and Agents</h1>
+<p>&quot;RAG as a solution for knowledge-intensive tasks where all the available knowledge can’t be input into the model directly&quot;</p>
+<p>Retrieve-then-generate pattern.  RAG as a technique to construct context specific to each<br>
+query.  RAG as a technique to construct context specific to each query.  Context construction for foundation models is equivalent to feature<br>
+engineering for classical ML models.</p>
+<p>A model that can process long context doesn’t necessarily use that<br>
+context well.</p>
+<p>if “your knowledge base is smaller than 200,000 tokens<br>
+(about 500 pages of material), you can just include the entire knowledge base in the prompt that you<br>
+give the model</p>
+<h2>RAG Architecture</h2>
+<p>In the original RAG paper, Lewis et al. trained the retriever and the generative model together.  The success of a RAG system depends on the quality of its retriever.</p>
+<p>How to index data depends on how you want to retrieve it later on.  You can split each document into more manageable<br>
+chunks</p>
+<h2>Retrieval Algorithms</h2>
+<p>Two of the most common retrieval algorithms: term-based retrieval and embedding-based retrieval.</p>
+<p>Sparse retrievers represent data using sparse vectors. A sparse vector is a vector where the majority of the values are 0.</p>
+<p>Term-based retrieval is considered sparse, as each term can be represented using a sparse one-hot vector, a vector that is 0 everywhere except one value of 1.</p>
+<p>Dense retrievers represent data using dense vectors. A dense vector is a vector where the majority of the values aren’t 0. Embedding-based retrieval is typically considered dense, as embeddings are generally dense vectors.</p>
+<h3>Lexical/term Retrieval</h3>
+<p>Lexical retrieval: the most straightforward way to find relevant documents is with keywords.</p>
+<ul>
+<li>TF-IDF, Term frequency.  a term’s importance is inversely proportional to the number of documents it appears in.  inverse document frequency (IDF).</li>
+<li>BM25 normalizes term frequency scores by document length. Longer documents are more likely to contain a given term and have higher term frequency values.</li>
+</ul>
+<p>tokenization: can lead to multi-word terms being broken into individual words, losing their original meaning. One way to<br>
+mitigate this issue is to treat the most common n-grams as terms.  Measuring the lexical similarity between two texts<br>
+based on their n-gram overlap.</p>
+<p>Term-based retrieval is generally much faster than embedding-based retrieval during both indexing and query. Term extraction is faster than embedding generation, and mapping from a term to the documents that contain it can be less computationally expensive than a nearest-neighbor search.</p>
+<p>its simplicity also means that it has fewer components you can tweak to improve its performance</p>
+<h3>Vector search &amp; Embeddings</h3>
+<p>Semantic retrieval: embedding-based retrievers aim to rank documents based on how closely their meanings align with the query</p>
+<p>Embedding model: convert the query into an embedding using the same embedding model used during indexing.</p>
+<p>Real-world semantic retrieval systems might contain other components, such as a reranker to rerank all retrieved candidates, and caches to reduce latency.</p>
+<p>Vector search is typically framed as a nearest-neighbor search problem.  The naive solution is k-nearest neighbors (k-NN) but it’s<br>
+computationally heavy and slow. It should be used only for small datasets.</p>
+<p>For large datasets, vector search is typically done using an approximate nearest neighbor (ANN) algorithm.</p>
+<p>vector databases organize vectors into buckets, trees, or graphs</p>
+<p>Many traditional databases have extended or will extend to support vector storage and vector search.</p>
+<p>Embedding-based retrieval, on the other hand, can be significantly improved over time to outperform term-based retrieval. You can finetune the embedding model and the retriever, either separately, together, or in conjunction with the generative model.</p>
+<p>Since much of RAG latency comes from output generation, especially for long outputs, the added latency by query embedding generation and vector search might be minimal compared to the total RAG latency</p>
+<h3>Comparison</h3>
+<p>Context precision &amp; Context recall.  Curate an evaluation set with a list of test queries and a set of documents.</p>
+<p>You only need to compare the retrieved documents to the query, which can be done by an AI judge.</p>
+<p>If you care about the ranking of the retrieved documents, for example, more relevant documents should be ranked first.</p>
+<p>For semantic retrieval, you need to also evaluate the quality of your embeddings.</p>
+<p>The quality of a retriever should also be evaluated in the context of the whole RAG system.</p>
+<p>With retrieval systems, you can make certain trade-offs between indexing and querying. The more detailed the index is, the more accurate the retrieval process will be, but the indexing process will be slower and more memory-consuming</p>
+<p>The quality of a RAG system should be evaluated both component by component and end to end.</p>
+<ol>
+<li>Evaluate the retrieval quality.</li>
+<li>Evaluate the final RAG outputs.</li>
+<li>Evaluate the embeddings (for embedding-based retrieval).</li>
+</ol>
+<p>a production retrieval system typically combines several approaches.</p>
+<ul>
+<li>first using a cheap, fast retriever and then a slow more in-depth retriever</li>
+<li>using multiple retrievers in tandem</li>
+</ul>
+<p>Both of those require a reranker</p>
+<h2>Retrieval Optimization</h2>
+<p>The simplest strategy is to chunk documents into chunks of equal length based on a certain unit.</p>
+<p>You can also split documents recursively using increasingly smaller units until each chunk fits within your maximum chunk size</p>
+<p>Specific documents might also support creative chunking strategies</p>
+<p>Overlapping ensures that important boundary information is included in at least one chunk.</p>
+<p>The chunk size shouldn’t exceed the maximum context length of the generative model. For the embedding-based approach, the chunk size also shouldn’t exceed the embedding model’s context limit.</p>
+<p>A smaller chunk size allows for more diverse information.  Small chunk sizes, however, can cause the loss of important information.  Smaller chunk sizes can also increase computational overhead.</p>
+<h3>Reranking</h3>
+<p>Reranking is especially useful when you need to reduce the number of retrieved documents, either to fit them into your model’s context or to reduce the number of input tokens</p>
+<p>Documents can also be reranked based on time, giving higher weight to more recent data.</p>
+<p>In context reranking, the order of documents still matters because it affects how well a model can process them. Models might better understand documents at the beginning and end of the context</p>
+<h3>Query Rewriting</h3>
+<p>Query rewriting is also known as query reformulation, query normalization, and sometimes query expansion.</p>
+<p>In traditional search engines, query rewriting is often done using heuristics.  Query rewriting can also be done using other<br>
+AI models.</p>
+<h3>Contextual Retrieval</h3>
+<p>Augment each chunk with relevant context to make it easier to retrieve the relevant chunks. A simple technique is to augment a chunk with metadata like tags and keywords.</p>
+<p>You can also augment each chunk with the questions it can answer. For customer support, you can augment each article with related questions.</p>
+<p>You can augment each chunk with the context from the original document, that explains the chunk and its relationship to the original document.</p>
+
+    </div>
+</article>
+
+<style>
+    .content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .content-header {
+        margin-bottom: 3rem;
+    }
+
+    .title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .metadata {
+        margin: 1.5rem 0;
+    }
+
+    .primary-meta {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+        color: #ccc;
+    }
+
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .tag {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        display: inline-block;
+        transition: all 0.2s ease;
+    }
+
+    .tag:hover {
+        background-color: #e5e7eb;
+    }
+
+    .abstract {
+        font-size: 1.25rem;
+        color: #4b5563;
+        margin: 2rem 0;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .featured-image {
+        margin: 2rem auto;
+        text-align: center;
+        max-width: 700px;
+    }
+
+    .featured-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Specific image sizing based on image path */
+    img[src*="/books/"] {
+        max-width: 300px;
+    }
+
+    img[src*="/courses/"] {
+        max-width: 500px;
+    }
+
+    img[src*="/videos/"] {
+        max-width: 600px;
+    }
+
+    .content-body {
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: #1a1a1a;
+    }
+
+    @media (max-width: 768px) {
+        .title {
+            font-size: 2rem;
+        }
+
+        .abstract {
+            font-size: 1.125rem;
+        }
+
+        .featured-image {
+            max-width: 100%;
+        }
+        
+        img[src*="/books/"],
+        img[src*="/courses/"],
+        img[src*="/videos/"] {
+            max-width: 100%;
+            width: auto;
+        }
+    }
+</style> 
+
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 
