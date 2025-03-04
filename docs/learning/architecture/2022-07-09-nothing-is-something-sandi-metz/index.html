@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>99 Bottles of OOP - Commandz.io</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-logo">
+                <img src="/images/cmdz.jpg" alt="Commandz.io Logo" />
+            </a>
+            <a href="/about">About</a>
+            <a href="/posts">Blog</a>
+            <a href="/learning">Learning</a>
+            <a href="/snippets">Snippets</a>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="content">
+    <header class="content-header">
+        <h1 class="title">99 Bottles of OOP</h1>
+        
+        <div class="metadata">
+            <div class="primary-meta">
+                
+                <time datetime="2020-03-09T00:00:00.000Z">09 Mar 2020</time>
+                
+
+                
+                <span class="separator">•</span>
+                <span class="presenter">notes on work by Sandi Metz</span>
+                
+
+                
+            </div>
+
+            
+            <div class="tags-container">
+                
+                <span class="tag">architecture</span>
+                
+                <span class="tag">object oriented</span>
+                
+                <span class="tag">computer science</span>
+                
+                <span class="tag">data structures</span>
+                
+                <span class="tag">design patterns</span>
+                
+                <span class="tag">learning</span>
+                
+            </div>
+            
+        </div>
+
+        
+        <div class="abstract">
+            Why nothing values mean a lot
+        </div>
+        
+
+        
+        <div class="featured-image">
+            <a href="https://www.youtube.com/watch?v=29MAL8pJImQ" target="_blank" rel="noopener">
+                <img src="/images/youtube.png" alt="99 Bottles of OOP">
+            </a>
+        </div>
+        
+    </header>
+
+    <div class="content-body">
+        <p>Nothing is something</p>
+<p>If keyword in Ruby &amp; PHP... keeps you from learning OO.  Use blocks.</p>
+<p>Condition averse</p>
+<p>Conditions breed leads to shotgun surgery</p>
+<p>Prefer knowing an object to duplicating behavior</p>
+<p>Message centric, condition averse, abstraction seeking</p>
+<p>Why inheritance is not so good</p>
+<p>&quot;Inheritance is for specialization it's not for sharing code&quot;</p>
+<p>Composition + dependency injection what it means to do OO design</p>
+<p>Believe in nothing</p>
+<p>The concepts of zero, nil, etc are abstractions that reveal themselves by the absence of code</p>
+
+    </div>
+</article>
+
+<style>
+    .content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .content-header {
+        margin-bottom: 3rem;
+    }
+
+    .title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .metadata {
+        margin: 1.5rem 0;
+    }
+
+    .primary-meta {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .separator {
+        margin: 0 0.5rem;
+        color: #ccc;
+    }
+
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .tag {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        display: inline-block;
+        transition: all 0.2s ease;
+    }
+
+    .tag:hover {
+        background-color: #e5e7eb;
+    }
+
+    .abstract {
+        font-size: 1.25rem;
+        color: #4b5563;
+        margin: 2rem 0;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .featured-image {
+        margin: 2rem auto;
+        text-align: center;
+        max-width: 700px;
+    }
+
+    .featured-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Specific image sizing based on image path */
+    img[src*="/books/"] {
+        max-width: 300px;
+    }
+
+    img[src*="/courses/"] {
+        max-width: 500px;
+    }
+
+    img[src*="/videos/"] {
+        max-width: 600px;
+    }
+
+    .content-body {
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: #1a1a1a;
+    }
+
+    @media (max-width: 768px) {
+        .title {
+            font-size: 2rem;
+        }
+
+        .abstract {
+            font-size: 1.125rem;
+        }
+
+        .featured-image {
+            max-width: 100%;
+        }
+        
+        img[src*="/books/"],
+        img[src*="/courses/"],
+        img[src*="/videos/"] {
+            max-width: 100%;
+            width: auto;
+        }
+    }
+</style> 
+
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2020 Commandz.io. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html> 
