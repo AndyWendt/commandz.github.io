@@ -69,7 +69,7 @@
     <div class="content-body">
         <p>The team at ThoughtWorks have distilled several patterns that they've found useful in building GenAI products.  Some of these patterns have emerged from the new range of problems that these tools present: &quot;including hallucination, unbounded data access and non-determinism.&quot;</p>
 <h1>Direct prompting</h1>
-<p>Llm will not know anything beyond what it was trained or things that happened since.  May not know the context it's operating in and therefore it may not prioritize it's knowledge.</p>
+<p>LLM will not know anything beyond what it was trained or things that happened since.  May not know the context it's operating in and therefore it may not prioritize it's knowledge.</p>
 <p>Habits of misleading replies and over confidence.  Hallucinate.</p>
 <p>In order to use this pattern you need to figure out how good the results of the prompting is.  Thought works has found that a strong emphasis on a systematic and deliberate testing of AI systems is crucial to allow for changing them in various ways in the future.</p>
 <h1>Evals</h1>
@@ -89,8 +89,99 @@ One of the best ways to do this is to leverage embeddings.  You need to let it k
 <p>The contacts provided can help mitigate biases in the original training.</p>
 <p>Generally, Rag is much more cost effective than fine tuning.</p>
 <p>Chunk retrieval by itself isn't efficient.</p>
-<h1>Fine tuning</h1>
-<p>Fine tuning is usually not the best approach given that it's expensive to do.</p>
+<p>&quot;we've found we can tackle most of our generative AI work using Retrieval Augmented Generation (RAG).&quot;</p>
+<h2>RAG Limitations</h2>
+<h3>Inefficient Retrieval</h3>
+<p>&quot;relying solely on document chunk embeddings in a vector store won’t lead to efficient retrieval&quot;</p>
+<p>&quot;dense embeddings are good at finding similar paragraphs, they inevitably lose some semantic detail. No amount of fine-tuning can completely bridge this gap.&quot;</p>
+<p>Use <a href="https://martinfowler.com/articles/gen-ai-patterns/#hybrid-retriever">Hybrid Retriever</a> to mitigate these issues.</p>
+<ul>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf">term frequency–inverse document frequency</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Okapi_BM25">Okapi BM25</a></p>
+</li>
+<li>
+<p>Using keyword searches with vector search can lead to too many results but you can deal with this by using a reranker</p>
+</li>
+<li>
+<p>Recommends chunks of 1000 characters with 100 characters of overlap with a hybrid retriever</p>
+</li>
+<li>
+<p>OpenAI's <a href="https://openai.com/index/new-embedding-models-and-api-updates">text-embedding-3-large</a> for embeddings</p>
+</li>
+<li>
+<p>Sometimes you don't even need to use vector searches</p>
+</li>
+</ul>
+<h3>Minimalistic User Query</h3>
+<p>Oftentimes a User's query might not be specific enough or have enough data. This can lead &quot;to less accurate and more generalized results.&quot;</p>
+<p>Use <a href="https://martinfowler.com/articles/gen-ai-patterns/#query-rewrite">Query Rewriting</a> to mitigate. Another option might be providing already formed options for the user.</p>
+<ul>
+<li>
+<p>combine the results</p>
+</li>
+<li>
+<p>crucial for complex searches. Searches can often be improved by using the proper terms.</p>
+</li>
+<li>
+<p>Extra cost associated</p>
+</li>
+</ul>
+<h3>Context bloat</h3>
+<p>Currently, LLMs (even LLMs designed for large-context) have issues with large context and will ignore details in the middle of the context.</p>
+<p>Use the <a href="https://martinfowler.com/articles/gen-ai-patterns/#reranker">Reranker</a> pattern to mitigate.</p>
+<ul>
+<li>
+<p>works well with an overly large result set</p>
+</li>
+<li>
+<p><a href="https://sbert.net/docs/package_reference/cross_encoder/cross_encoder.html">cross-encoder</a> like <a href="https://huggingface.co/BAAI/bge-reranker-large">bge-reranker-large</a></p>
+</li>
+<li>
+<p>Enhances the accuracy and relevance of documents</p>
+</li>
+<li>
+<p>Useful for incorporating a user's preferences</p>
+</li>
+<li>
+<p>adds cost</p>
+</li>
+</ul>
+<h3>Gullibility</h3>
+<p>Over-confidence, hallucinating, revealing secrets, etc.</p>
+<p>Use <a href="https://martinfowler.com/articles/gen-ai-patterns/#guardrails">Guardrails</a> pattern..</p>
+<ul>
+<li>
+<p>input and output guardrails</p>
+</li>
+<li>
+<p>generally a specific model</p>
+</li>
+<li>
+<p>can implement the <a href="https://docs.nvidia.com/nemo/guardrails/user_guides/guardrails-library.html#self-check-input">self_check_input</a> rails of <a href="https://docs.nvidia.com/nemo/guardrails/user_guides/guardrails-library.html">NeMo Guardrails</a> framework.</p>
+</li>
+<li>
+<p>can also use embeddings given that they are more flexible than rigid rules</p>
+</li>
+<li>
+<p>used <a href="https://github.com/aurelio-labs/semantic-router">Semantic Router</a> to route or reject</p>
+</li>
+</ul>
+<h1>Fine-tuning</h1>
+<blockquote>
+<p>Fine tuning a model incurs significant skills, computational resources, expense, and time. Therefore it's wise to try other techniques first, to see if they will satisfy our needs - and in our experience, they usually do.</p>
+</blockquote>
+<p>Fine-tuning is usually not the best approach given that it's expensive to do.</p>
+<p>First try different prompting tweaks. Then Introduce Rag and then finally Fine Tuning.</p>
+<p>RAG might not be enough and might not supply enough context or too narrow.</p>
+<p>&quot;backpropagation, where errors are propagated backward through the model to update its weights, improving future predictions.&quot;</p>
+<p>Full fine-tuning every part of the model is affected.</p>
+<p>Using Selective layer fine-tuning, you can achieve significant improvements by selectively fine-tuning specific layers.</p>
+<p>Parameter-Efficient Fine-Tuning (PEFT) adds and trains new params using <a href="https://arxiv.org/abs/2106.09685"><strong>Low-Rank Adaptation (LoRA)</strong></a> or <a href="https://arxiv.org/abs/2104.08691"><strong>Prompt Tuning</strong></a></p>
+<p>without changing the base model's parameters.</p>
+<p>The majority of your efforts will go into data preparation and curation. Look at synthetic data generation.</p>
 
     </div>
 </article>
