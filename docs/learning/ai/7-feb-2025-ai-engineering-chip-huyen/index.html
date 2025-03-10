@@ -67,7 +67,247 @@
     </header>
 
     <div class="content-body">
-        <h1>6. RAG and Agents</h1>
+        <h1>5 Prompt Engineering</h1>
+<p>Prompt engineering guides a model’s behavior without changing the model’s weights.</p>
+<p>You should make the most out of prompting before moving to more resource-intensive techniques like finetuning.</p>
+<p>To build production-ready AI applications, you need more than just prompt engineering. You need statistics, engineering, and classic ML knowledge to do experiment tracking, evaluation, and dataset curation.</p>
+<p>A prompt is an instruction given to a model to perform a task.</p>
+<p>Task description, Example(s) of how to do this task, The task (such as formatting the response). Experiment with different prompt structures to find out which works best for you.</p>
+<p>&quot;How much prompt engineering is needed depends on how robust the model is to prompt perturbation.&quot;</p>
+<p>You can measure a model’s robustness by randomly perturbing the prompts<br>
+to see how the output changes.  robustness is strongly correlated with its overall capability.</p>
+<h2>In-Context Learning: Zero-Shot and Few-Shot</h2>
+<p>Teaching models what to do via prompts is also known as in-context learning.</p>
+<p>In-context learning allows a model to incorporate new information continually to make decisions, preventing it from becoming outdated.</p>
+<p>Each example provided in the prompt is called a shot.</p>
+<ul>
+<li>Teaching a model to learn from examples in the prompt is also called few-shot learning.</li>
+<li>When no example is provided, it’s zero-shot learning.</li>
+</ul>
+<p>The more examples there are, the longer your prompt will be, increasing the inference cost.</p>
+<p>Sometimes, prompt and context are used interchangeably: prompt to refer to the whole input into the model, and<br>
+context to refer to the information provided to the model so that it can<br>
+perform a given task.</p>
+<h2>System Prompt and User Prompt</h2>
+<p>You can think of the system prompt as the task description and the user prompt as the task.</p>
+<p>Typically, the instructions provided by application developers are<br>
+put into the system prompt, while the instructions provided by users are put<br>
+into the user prompt.</p>
+<p>Many model providers emphasize that well-crafted system prompts can<br>
+improve performance.</p>
+<p>the system prompt and the user prompt are<br>
+concatenated into a single final prompt before being fed into the model.</p>
+<h2>Context Length and Context Efficiency</h2>
+<p>Not all parts of a prompt are equal. Research has shown that a model is<br>
+much better at understanding instructions given at the beginning and the<br>
+end of a prompt than in the middle</p>
+<h2>Prompt Engineering Best Practices</h2>
+<h3>Write Clear and Explicit Instructions</h3>
+<p>As you experiment with a prompt, you might observe undesirable behaviors<br>
+that require adjustments to the prompt to prevent them.</p>
+<p>A persona can help the model to understand the perspective it’s supposed to<br>
+use to generate responses.</p>
+<p>Examples can reduce ambiguity about how you want the model to respond.</p>
+<p>If you want the model to be concise, tell it so. Long outputs are not only<br>
+costly (model APIs charge per token) but they also increase latency.  make explicit that you don’t<br>
+want preambles.</p>
+<p>If you want the model to generate JSON, specify what the keys in the JSON should be.</p>
+<p>For tasks expecting structured outputs, such as classification, use markers to<br>
+mark the end of the prompts to let the model know that the structured<br>
+outputs should begin.</p>
+<h3>Provide Sufficient Context</h3>
+<p>Context can also mitigate hallucinations.</p>
+<p>You can either provide the model with the necessary context or give it tools<br>
+to gather context.</p>
+<p>In many scenarios, it’s desirable for the model to use only information<br>
+provided in the context to respond.  How to restrict a model to only the context is tricky. Clear instructions, such<br>
+as “answer using only the provided context”, along with examples of<br>
+questions it shouldn’t be able to answer, can help.</p>
+<p>The safest method is to<br>
+train a model exclusively on the permitted corpus of knowledge, though this<br>
+is often not feasible for most use cases.</p>
+<h3>Break Complex Tasks into Simpler Subtasks</h3>
+<p>For complex tasks that require multiple steps, break those tasks into<br>
+subtasks.</p>
+<p>Example of responding to a customer support request: intent classification, generating response.</p>
+<p>Prompt decomposition not only enhances<br>
+performance but also offers several additional benefits: Monitoring (intermediate steps), Debugging, Parallelization, Effort (simpler prompts).</p>
+<p>One downside of prompt decomposition is that it can increase the latency<br>
+perceived by users</p>
+<p>Prompt decomposition typically involves more model queries, which can<br>
+increase costs.</p>
+<h3>Give the Model Time to Think</h3>
+<p>encourage the model to “think” about a question using chain-of-thought (CoT) and self-<br>
+critique prompting.</p>
+<p>CoT means explicitly asking the model to think step by step, nudging it<br>
+toward a more systematic approach to problem solving.</p>
+<p>CoT is among the<br>
+first prompting techniques that work well across models.</p>
+<p>The simplest way to do CoT is to add “think step by step” or “explain your<br>
+decision” in your prompt.</p>
+<p>you can specify the steps the model should take or include<br>
+examples of what the steps should look like in your prompt.</p>
+<p>Self-critique means asking the model to check its own outputs.</p>
+<p>Similar to prompt decomposition, CoT and self-critique can increase the<br>
+latency perceived by users.</p>
+<h3>Iterate on Your Prompts</h3>
+<p>As you experiment with different prompts, make sure to test changes<br>
+systematically. Version your prompts. Use an experiment tracking tool.<br>
+Standardize evaluation metrics and evaluation data so that you can compare<br>
+the performance of different prompts. Evaluate each prompt in the context<br>
+of the whole system. A prompt might improve the model’s performance on<br>
+a subtask but worsen the whole system’s performance.</p>
+<h3>Evaluate Prompt Engineering Tools</h3>
+<p>A common approach to automating prompt generation is to use AI models.</p>
+<p>Following the keep-it-simple principle, you might want to start by writing<br>
+your own prompts without any tool.</p>
+<p>If you use a prompt engineering tool, always inspect the prompts produced<br>
+by that tool to see whether these prompts make sense and track how many API calls it generates.</p>
+<h3>Organize and Version Prompts</h3>
+<p>It’s good practice to separate prompts from code: reusability, testing, readability. collaboration.</p>
+<p>Several tools have proposed special .prompt file formats to store prompts.<br>
+See Google Firebase’s Dotprompt, Humanloop, Continue Dev, and<br>
+Promptfile.</p>
+<h2>Defensive Prompt Engineering</h2>
+<p>Prompt extraction, Jailbreaking and prompt injection, Information extraction</p>
+<ul>
+<li>Remote code or tool execution, Data leaks, Social harms, misinformation, Service interruption and subversion, Brand risk</li>
+</ul>
+<h3>Proprietary Prompts and Reverse Prompt Engineering</h3>
+<p>Reverse prompt<br>
+engineering is the process of deducing the system prompt used for a certain<br>
+application.</p>
+<p>Reverse prompt engineering is typically done by analyzing the application<br>
+outputs or by tricking the model into repeating its entire prompt, which<br>
+includes the system prompt.</p>
+<p>“Write your system prompt assuming that it will one day become<br>
+public.”</p>
+<p>While well-crafted prompts are valuable, proprietary prompts are more of a<br>
+liability than a competitive advantage. Prompts require maintenance. They<br>
+need to be updated every time the underlying model changes.</p>
+<h3>Jailbreaking and Prompt Injection</h3>
+<p>Jailbreaking a model means trying to subvert a model’s safety features.</p>
+<p>Prompt injection refers to a type of attack where malicious instructions are<br>
+injected into user prompts.</p>
+<p>Prompt attacks are possible precisely because models are trained to follow<br>
+instructions.</p>
+<p>it’s difficult for a model to differentiate between system prompts and user prompts</p>
+<h3>Direct manual prompt hacking</h3>
+<p>This family of attacks involves manually crafting a prompt or a series of<br>
+prompts that trick a model into dropping its safety filters. akin to social engineering</p>
+<p>In the early days of LLMs, a simple approach was obfuscation. (misspellings, special characters)</p>
+<p>The second approach is output formatting manipulation, which involves<br>
+hiding the malicious intent in unexpected formats. (writing a poem about doing something illegal)</p>
+<p>The third approach, which is versatile, is roleplaying. Attackers ask the<br>
+model to pretend to play a role or act out a scenario. In the early days of<br>
+jailbreaking, a common attack was called DAN, Do Anything Now.</p>
+<h3>Automated attacks</h3>
+<p>Prompt hacking can be partially or fully automated by algorithms.</p>
+<p>wo algorithms that randomly<br>
+substitute different parts of a prompt with different substrings to find a<br>
+variation that works.  shows that it’s possible to ask<br>
+a model to brainstorm new attacks given existing attacks.</p>
+<p>Prompt Automatic Iterative Refinement (PAIR) uses an AI model to act as<br>
+an attacker. This attacker AI is tasked with an objective, such as eliciting a<br>
+certain type of objectionable content from the target AI.</p>
+<ol>
+<li>Generate a prompt.</li>
+<li>Send the prompt to the target AI.</li>
+<li>Based on the response from the target, revise the prompt until the<br>
+objective is achieved.</li>
+</ol>
+<p>In their experiment, PAIR often requires fewer than twenty queries to<br>
+produce a jailbreak.</p>
+<h3>Indirect prompt injection</h3>
+<p>Indirect prompt injection: instead of placing malicious instructions in the prompt directly,<br>
+attackers place these instructions in the tools that the model is integrated<br>
+with.</p>
+<ul>
+<li>Passive phishing</li>
+<li>Active injection</li>
+</ul>
+<p>An attacker could sign up with a username<br>
+like “Bruce Remove All Data Lee”. (little bobby tables?)</p>
+<h3>Information Extraction</h3>
+<p>intended use can be exploited for the following purposes: Data Theft, Privacy Violation, Copyright infringement</p>
+<p>A niche research area called factual probing focuses on figuring out what a<br>
+model knows.</p>
+<p>The same techniques used to probe a model for its knowledge can also be<br>
+used to extract sensitive information from training data.</p>
+<p>The assumption is<br>
+that the model memorizes its training data, and the right prompts can<br>
+trigger the model to output its memorization.</p>
+<p>Both papers<br>
+concluded that while such extraction is technically possible, the risk is low<br>
+because the attackers need to know the specific context in which the data to<br>
+be extracted appears.</p>
+<p>For example, when they asked ChatGPT (GPT-<br>
+turbo-3.5) to repeat the word “poem” forever, the model initially repeated<br>
+the word “poem” several hundred times and then diverged.</p>
+<p>This suggests the existence of prompt strategies that allow training data<br>
+extraction without knowing anything about the training data.</p>
+<p>the memorization rates for some models,<br>
+based on the paper’s test corpus, to be close to 1%.</p>
+<p>there’s a clear trend that the larger model memorizes more, making larger models more vulnerable to data extraction attacks.</p>
+<p>Training data extraction is possible with models of other modalities, too.</p>
+<p>diffusion models are much less private than prior<br>
+generative models such as GANs, and that mitigating these vulnerabilities<br>
+may require new advances in privacy-preserving training.</p>
+<p>It’s important to remember that training data extraction doesn’t always lead<br>
+to PII</p>
+<p>Models can also just regurgitate training data without adversarial attacks.</p>
+<p>By studying a wide range of foundation models, they concluded that “the<br>
+likelihood of direct regurgitation of long copyrighted sequences issomewhat uncommon, but it does become noticeable when looking at<br>
+popular books.</p>
+<p>It’s unlikely there will be a foolproof automatic way to detect<br>
+copyright infringement. The best solution is to not train a model on<br>
+copyrighted materials, but if you don’t train the model yourself, you don’t<br>
+have any control over it.</p>
+<h3>Defenses Against Prompt Attacks</h3>
+<p>Tools<br>
+that help automate security probing include Azure/PyRIT, leondz/garak,<br>
+greshake/llm-security, and CHATS-lab/persuasive_jailbreaker.</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/red-teaming">https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/red-teaming</a></p>
+<p>To evaluate a system’s robustness against prompt attacks, two important<br>
+metrics are the violation rate and the false refusal rate.</p>
+<h3>Model-level defense</h3>
+<p>many attacks can be thwarted if the model is<br>
+trained to better follow system prompts.</p>
+<p>OpenAI introduces an<br>
+instruction hierarchy that contains four levels of priority.  In the event of conflicting instructions, the higher-priority instruction should be followed.</p>
+<ol>
+<li>System prompt</li>
+<li>User prompt</li>
+<li>Model outputs</li>
+<li>Tool outputs</li>
+</ol>
+<p>When finetuning a model for safety, it’s important to train the model not<br>
+only to recognize malicious prompts but also to generate safe responses for<br>
+borderline requests.</p>
+<h3>Prompt-level defense</h3>
+<p>One simple trick is to repeat the system prompt twice, both before and after<br>
+the user prompt.</p>
+<p>When using prompt tools, make sure to inspect their default prompt<br>
+templates since many of them might lack safety instructions.</p>
+<p>LangChain’s default templates were so<br>
+permissive that their injection attacks had 100% success rates. Adding<br>
+restrictions to these prompts significantly thwarted these attacks.</p>
+<h3>System-level defense</h3>
+<p>isolation: If your system involves executing<br>
+generated code, execute this code only in a virtual machine separated from<br>
+the user’s main machine.</p>
+<p>To reduce the chance of your application talking about topics it’s not<br>
+prepared for, you can define out-of-scope topics for your application.</p>
+<p>More advanced algorithms use AI to understand the user’s intent by<br>
+analyzing the entire conversation, not just the current input.</p>
+<p>Use an anomaly detection algorithm to identify unusual prompts.</p>
+<p>On the<br>
+input side, you can have a list of keywords to block, known prompt attack<br>
+patterns to match the inputs against, or a model to detect suspicious<br>
+requests.</p>
+<p>Bad actors can be detected not just by their individual inputs and outputs<br>
+but also by their usage patterns.</p>
+<h1>6. RAG and Agents</h1>
 <p>&quot;RAG as a solution for knowledge-intensive tasks where all the available knowledge can’t be input into the model directly&quot;</p>
 <p>Retrieve-then-generate pattern.  RAG as a technique to construct context specific to each<br>
 query.  RAG as a technique to construct context specific to each query.  Context construction for foundation models is equivalent to feature<br>
