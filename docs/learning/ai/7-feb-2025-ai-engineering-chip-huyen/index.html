@@ -386,6 +386,222 @@ AI models.</p>
 <p>Augment each chunk with relevant context to make it easier to retrieve the relevant chunks. A simple technique is to augment a chunk with metadata like tags and keywords.</p>
 <p>You can also augment each chunk with the questions it can answer. For customer support, you can augment each article with related questions.</p>
 <p>You can augment each chunk with the context from the original document, that explains the chunk and its relationship to the original document.</p>
+<h1>8. Dataset Engineering</h1>
+<h2>Highlights</h2>
+<hr>
+<p>The best<br>
+ML team in the world with infinite compute can’t help you finetune a good<br>
+model if you don’t have data.</p>
+<p>For the same model, different training phases aim to teach the model<br>
+different capabilities, and, therefore, require datasets with different<br>
+attributes.</p>
+<p>data-centric AI, as opposed to model-centric AI</p>
+<p>meaningful technological progress often requires investment in<br>
+both model and data improvements.</p>
+<p>For<br>
+instruction finetuning, you need data in the (instruction, response) format.<br>
+For preference finetuning, you need data in the (instruction, winning<br>
+response, losing response) format. To train a reward model, you can use the<br>
+same data format as preference finetuning or use data with annotated scores<br>
+for each of your examples in the ((instruction, response), score) format.</p>
+<p>Acquiring high-quality data annotations is always challenging, but it’s even<br>
+more challenging if you want to teach models complex behaviors such as<br>
+chain-of-thought (CoT) reasoning and tool use.</p>
+<p>CoT: ts training data should include CoT responses.</p>
+<p>It’s common to use domain experts to<br>
+create tool use data, where each prompt is a task that requires tool<br>
+use, and its response is the actions needed to perform that task.</p>
+<h2>Data Curation</h2>
+<p>Data curation isn’t just about creating new data to help a model learn new<br>
+behaviors but is also about removing existing data to help a model unlearnbad behaviors.</p>
+<p>Data coverage is equivalent to having the right<br>
+mix of ingredients (e.g., you shouldn’t have too much or too little sugar).<br>
+Data quantity is about how many ingredients you should have.</p>
+<p>A small amount of high-quality data can outperform a large amount of noisy<br>
+data, e.g., data that is irrelevant or inconsistent.</p>
+<p>The short answer is that data is considered<br>
+high-quality if it helps you do your job efficiently and reliably. The long<br>
+3<br>
+answers, however, differ for different people.</p>
+<p>In general, data can be<br>
+considered high-quality if it has the following six characteristics: relevant,aligned with task requirements, consistent, correctly formatted, unique, and<br>
+compliant.</p>
+<p>Redundant formatting tokens can interfere with the model’s learning,</p>
+<h3>Data Coverage</h3>
+<p>A model’s training data should cover the range of problems you expect it to<br>
+solve.</p>
+<p>Coverage requires sufficient data diversity, which is why<br>
+many refer to this attribute as data diversity.</p>
+<p>On the other hand, a<br>
+chatbot that recommends products to global customers doesn’t necessarily<br>
+need domain diversity, but linguistic and cultural diversity will be<br>
+important.</p>
+<p>Llama 3 authors shared that annealing the model on small amounts of<br>
+high-quality code and math data (training the model using an increasingly<br>
+smaller learning rate with increasingly more code and math data) can boost<br>
+the performance of their models on key benchmarks.</p>
+<p>This confirms acommon belief that high-quality code and math data is more effective than<br>
+natural language text in boosting the model’s reasoning capabilities.</p>
+<p>A<br>
+simple approach is to choose a data mix that accurately reflects the real-<br>
+world application usage.</p>
+<h3>Data Quantity</h3>
+<p>Three other factors influence how much data you need:</p>
+<ul>
+<li>Full finetuning promises to give the best performance, but it requires orders of magnitude more data than PEFT methods like LoRA.</li>
+<li>Task complexity</li>
+<li>Base model’s performance: The closer the base model is to the desirable performance, the fewer examples are needed to get there.</li>
+</ul>
+<p>if you have fewer examples (100), more advanced models give you better finetuning performance.</p>
+<p>In short, if you have a small amount of data, you might want to use PEFT<br>
+methods on more advanced models. If you have a large amount of data, use<br>
+full finetuning with smaller models.</p>
+<p>Experimenting with a small dataset can help you estimate how much more<br>
+data you’ll need.  A steep performance gain slope with increasing dataset size<br>
+means that you can expect significant performance improvement bydoubling your data.</p>
+<p>While a larger number of finetuning examples generally improves a model’s<br>
+performance, the diversity of the examples matters, too.</p>
+<p>The diversity of data can be reflected in task types (such as summarization<br>
+and question answering), topic diversity (such as fashion, finance, and<br>
+technology), and the expected output formats (such as JSON outputs or yes-<br>
+or-no answers).</p>
+<h3>Data Acquisition and Annotation</h3>
+<p>The most important source of data, however, is typically data from your<br>
+own application. If you can figure out a way to create a data flywheel that<br>
+leverages data generated by your users to continually improve your product, you will gain a significant advantage.</p>
+<p>Application data is ideal because it’s<br>
+perfectly relevant and aligned with your task. In other words, it matches the<br>
+distribution of the data that you care about, which is incredibly hard to<br>
+achieve with other data sources.</p>
+<p>Google dataset search</p>
+<p>Often, you might need to annotate your own data for finetuning. Annotation<br>
+is challenging not just because of the annotation process but also due to the<br>
+complexity of creating clear annotation guidelines.</p>
+<p>Some teams, including LinkedIn, have reported that annotation guidelines<br>
+were among the most challenging parts of their AI engineering pipeline.</p>
+<p>Two processes commonly used are data augmentation and data synthesis.</p>
+<ul>
+<li>Data augmentation creates new data from existing data</li>
+<li>Data synthesis generates data to mimic the properties of real data.</li>
+</ul>
+<p>In other words, augmented data is derived from real data, whereas synthetic<br>
+data isn’t real. However, since the goal of both augmentation and synthesis<br>
+is to automate data creation, sometimes the two terms are used<br>
+interchangeably.</p>
+<p>In many use cases, as discussed in “Limitations to AI-generated data”,<br>
+mixing human- and AI-generated data often produces the best value.</p>
+<h3>Why Data Synthesis</h3>
+<p>To increase data quantity<br>
+To increase data coverage<br>
+To increase data quality<br>
+To mitigate privacy concerns<br>
+To distill models</p>
+<p>Using algorithms to generate data is also called procedural generation, as opposed to manual generation.</p>
+<p>A newer method made possible by advanced AI models is using AI itself to synthesize data.</p>
+<p>You can procedurally generate new data from existing data by applying<br>
+simple transformations.</p>
+<p>This approach can be used to mitigate potential biases in your data.</p>
+<p>One interesting transformation is perturbation: adding noise to existing data<br>
+to generate new data.</p>
+<p>You can train your model on perturbed data. Perturbation can both improve<br>
+the model’s performance and make it more robust against attacks;</p>
+<p>Simulations allow you to run multiple experiments with minimal costs<br>
+while avoiding accidents and physical damage.</p>
+<p>Simulations are common to generate data to teach models to use tools.</p>
+<h3>AI-Powered Data Synthesis</h3>
+<p>AI’s paraphrasing and translation abilities can be used to augment existing<br>
+datasets.</p>
+<p>However, as the internet becomes flooded with AI-generated content,<br>
+models that rely on internet data are likely already pre-trained on synthetic<br>
+data.</p>
+<p>Data synthesis for post-training is also more common because post-training<br>
+data, including both instruction data and preference data, generally demands<br>
+the most effort to produce.</p>
+<p>You can also use humans to write instructions and AI to<br>
+generate responses</p>
+<p>follow the reverse<br>
+instruction approach: take existing long-form, high-quality content like<br>
+stories, books, and Wikipedia articles and use AI to generate prompts that<br>
+would elicit such content</p>
+<p>It’s possible to use reverse instruction to develop increasingly powerful models without adding manually annotated data.</p>
+<p>To ensure the quality of the generated data, they employed a rigorous correctness analysis and error correction pipeline</p>
+<p>The quality of AI-generated data can be measured the same way you’d evaluate other AI outputs—by functional correctness and AI judges.</p>
+<p>Just like real data, synthetic data can also be filtered using heuristics. In<br>
+general, you might want to remove examples that are empty or too short for<br>
+your application.</p>
+<p>AI’s generated data can be of low quality, and, as people never tire of<br>
+saying, “garbage in, garbage out.”</p>
+<p>Worse, imitation can force the student model to hallucinate. Imagine if the<br>
+teacher model is capable of answering complex math questions, so its<br>
+responses to those questions are solutions.</p>
+<p>It’s also unclear how much AI-generated data a model can train on. Some<br>
+studies have shown that recursively using AI-generated data in training<br>
+causes irreversible defects in the resulting models, degrading their<br>
+performance over time.</p>
+<p>One possible explanation is that AI models are more likely to generate<br>
+probable events (e.g., not having cancer) and less likely to generate<br>
+improbable events (e.g., having cancer).</p>
+<p>This causes models to output more<br>
+common events over time while forgetting rare events.</p>
+<p>Some people have been able to improve model performance using a large<br>
+amount of synthetic data.</p>
+<p>AI-generated data might also perpetuate biases.</p>
+<p>the more faithful the model’s outputs to the<br>
+characteristics of the original training distribution, the more stable the<br>
+feedback loop, thus minimizing the risk of bias amplification.</p>
+<h3>Model Distillation</h3>
+<p>Model distillation (also called knowledge distillation) is a method in which<br>
+a small model (student) is trained to mimic a larger model</p>
+<p>Traditionally, the goal of model distillation is to produce smaller models for<br>
+deployment. Deploying a big model can be resource-intensive.</p>
+<p>Synthetic instruction data is commonly used together with adapter-based<br>
+techniques, such as LoRA.</p>
+<p>Note that not all training with synthetic data is model distillation. Model<br>
+distillation implies that the teacher model’s performance is the student’s<br>
+gold standard.</p>
+<p>it’s possible to use synthetic data to train a student<br>
+model that is larger and more powerful than the teacher.</p>
+<p>The Llama 3 paper notes that while training on data generated by a more<br>
+competent model can significantly improve a model’s performance, training<br>
+indiscriminately on self-generated data doesn’t improve the model’s<br>
+performance and can even degrade it. However, by introducing mechanisms<br>
+to verify the quality of synthetic data and using only verified synthetic data,<br>
+they were able to continually improve a model using its generated data.</p>
+<h2>Data Processing</h2>
+<p>In every project I’ve worked on,<br>
+staring at data for just 15 minutes usually gives me some insight that could<br>
+save me hours of headaches.</p>
+<p>Duplicated data can skew the data distribution and introduce biases into<br>
+your model.</p>
+<p>Whole document duplications, Intra-document duplications, Cross-document duplications</p>
+<p>Here are some concrete ways you can deduplicate data:</p>
+<ul>
+<li>Pairwise comparison</li>
+<li>Hashing</li>
+<li>Dimensionality reduction</li>
+</ul>
+<h3>Clean and Filter Data</h3>
+<p>remove extraneous formatting tokens</p>
+<p>Unless you want to train your model on HMTL tags, remove<br>
+them.</p>
+<p>You need to clean your data of anything that isn’t compliant with your<br>
+policies, such as PII, sensitive data, copyrighted data, or data that is<br>
+considered toxic</p>
+<p>You also might want to remove low-quality data, using techniques<br>
+discussed in “Data verification” to detect low-quality data.</p>
+<p>Manual inspection of data is especially important in this step. Staring at<br>
+data might help you notice patterns that you can use as heuristics to detect<br>
+low-quality data.</p>
+<p>If there is more data than you need or can afford to use (e.g., due to your<br>
+compute budget), you can further filter your data.</p>
+<h3>Format Data</h3>
+<p>If you’re doing supervised finetuning, your data is most likely in the format<br>
+(instruction, response)</p>
+<p>Instructions can be further decomposed into (system<br>
+prompt, user prompt).</p>
+<p>If you’ve graduated to finetuning from prompt<br>
+engineering, the instructions used for finetuning might be different from the<br>
+instructions used during prompt engineering.</p>
 
     </div>
 </article>
